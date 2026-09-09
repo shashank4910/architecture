@@ -1,18 +1,34 @@
 from __future__ import annotations
 
 import json
+import shutil
+import sys
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 
 from PIL import Image, PngImagePlugin
 
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
 from house_plan_generator.plan_data import _transform_plan, make_plan
 from house_plan_generator.renderer_2d import render_2d
 
-ROOT = Path(__file__).resolve().parent
 MAIN_OUT = ROOT / "generated" / "plan_types"
 MAIN_OUT.mkdir(parents=True, exist_ok=True)
+
+
+def _reset_bucket(out_dir: Path) -> None:
+    if out_dir.exists():
+        for child in out_dir.iterdir():
+            if child.is_dir():
+                shutil.rmtree(child)
+            else:
+                child.unlink()
+    out_dir.mkdir(parents=True, exist_ok=True)
 
 
 def _stamp() -> str:
@@ -50,7 +66,7 @@ def generate_300() -> list[Path]:
     serial = 1
     for width, depth, facing, bedrooms, target_count in bucket_specs:
         out_dir = MAIN_OUT / f"{width}x{depth}"
-        out_dir.mkdir(parents=True, exist_ok=True)
+        _reset_bucket(out_dir)
         for idx in range(1, target_count + 1):
             plan = _make_bucket_variant(width, depth, facing, bedrooms, idx)
             stamp = _stamp()

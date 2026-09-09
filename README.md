@@ -39,7 +39,26 @@ pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m unittest -q tests/test_validator.py tests/test_match_validator.py tests/test_renderer.py
 ```
 
-4. Generate the canonical plans and deterministic local outputs:
+4. Launch the local browser UI:
+
+```powershell
+.\.venv\Scripts\python.exe .\app.py
+```
+
+Then open:
+
+```text
+http://localhost:5000
+```
+
+Use the form to choose the house size, facing, and bedroom count, then click Generate. The images are saved under:
+
+```text
+generated/
+  ui/
+```
+
+5. Generate the canonical plans and deterministic local outputs:
 
 ```powershell
 .\.venv\Scripts\python.exe -m src.house_plan_generator.generate_local
@@ -50,6 +69,18 @@ Or, if you prefer the project root entry point wrapper:
 ```powershell
 .\.venv\Scripts\python.exe .\scripts\generate_300_2d_batch.py
 ```
+
+This batch generator writes its outputs to:
+
+```text
+generated/
+  plan_types/
+    30x40/
+    30x50/
+    20x50/
+```
+
+Each size folder contains 100 2D renders, for a total of 300 images in the batch set.
 
 ## Important directories
 

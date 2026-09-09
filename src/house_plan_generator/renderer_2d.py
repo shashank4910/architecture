@@ -104,9 +104,9 @@ def render_2d(plan, output_path, geometry_path=None):
     image = Image.new("RGB", (W, H), PAPER)
     draw = ImageDraw.Draw(image)
 
-    f_title, f_sub = _font(32, True), _font(18)
-    f_room, f_dim = _font(19, True), _font(15, True)
-    f_small, f_tag = _font(13), _font(12, True)
+    f_title, f_sub = _font(36, True), _font(20)
+    f_room, f_dim = _font(24, True), _font(18, True)
+    f_small, f_tag = _font(15), _font(14, True)
     ox, oy = left, top
 
     # ---------- header ----------

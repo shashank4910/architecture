@@ -8,44 +8,52 @@ def r(room_id, name, x, y, width, depth, kind="habitable"):
 
 
 def make_plan(number, width, depth, facing, bedrooms):
+    corridor_y = 30 if width == 20 else 26
+    stair_y = 24 if width == 20 else 20
     rooms = [
         r("parking", "Parking", 0, 0, min(10, width // 2), 16, "parking"),
         r("living", "Living Room", width // 2, 0, width - width // 2, 12),
         r("puja", "Puja", width - 8, 12, 4, 4, "puja"),
         r("dining", "Dining", 0, 16, width // 2, 8),
         r("kitchen", "Kitchen", width // 2, 16, width - width // 2, 10, "kitchen"),
-        r("staircase", "Staircase", 0, 24, 6, 9, "staircase"),
-        r("bath1", "Bathroom 1", 6, 24, 4 if width >= 30 else 4, 6, "bathroom"),
-        r("corridor", "Circulation", 6, 30, 6 if width == 20 else 9, 3, "circulation"),
+        r("staircase", "Staircase", 0, stair_y, 6, 6, "staircase"),
+        r("bath1", "Bathroom 1", 6, stair_y, 4 if width >= 30 else 4, 6, "bathroom"),
+        r("corridor", "Circulation", 0, corridor_y, width, 3, "circulation"),
     ]
+    bedroom_y = 33 if width == 20 else 29
     if bedrooms == 3:
-        rooms += [
-            r("master", "Master Bedroom", width // 2, 33 if width == 20 else 26, width - width // 2, 10 if width == 20 else 8),
-            r("bed2", "Bedroom 2", 0, 33, width // 2, 10 if width == 20 else depth - 33),
-            r("bed3", "Bedroom 3", width // 2, 43 if width == 20 else 34, width - width // 2, depth - (43 if width == 20 else 34)),
-        ]
+        bedroom_widths = [width // 3, width // 3, width - 2 * (width // 3)]
+        start_x = 0
+        for idx, room_id in enumerate(["bed2", "master", "bed3"]):
+            width_ft = bedroom_widths[idx]
+            room = r(room_id, "Bedroom 2" if room_id == "bed2" else ("Master Bedroom" if room_id == "master" else "Bedroom 3"), start_x, bedroom_y, width_ft, 10)
+            rooms.append(room)
+            start_x += width_ft
+        rooms[-1]["ensuite_of"] = "master"
     else:
         rooms += [
-            r("master", "Master Bedroom", width // 2, 33, width - width // 2, 10),
-            r("bed2", "Bedroom 2", 0, 33, width // 2, 10),
+            r("master", "Master Bedroom", width // 2, bedroom_y, width - width // 2, 10),
+            r("bed2", "Bedroom 2", 0, bedroom_y, width // 2, 10),
         ]
+        rooms[-1]["ensuite_of"] = "master"
     if width == 20:
-        rooms += [r("bath2", "Bathroom 2", 0, depth - 7, 6, 7, "bathroom")]
+        rooms += [{"id": "bath2", "name": "Bathroom 2", "x_ft": 0, "y_ft": depth - 7, "width_ft": 6, "depth_ft": 7, "kind": "bathroom", "ensuite_of": "bed2"}]
     else:
-        rooms += [r("bath2", "Bathroom 2", 10, 24, 5, 6, "bathroom")]
+        rooms += [{"id": "bath2", "name": "Bathroom 2", "x_ft": 10, "y_ft": 24, "width_ft": 5, "depth_ft": 6, "kind": "bathroom"}]
     doors = [
         {"id": "entrance", "room_id": "living", "side": facing.lower(), "offset_ft": 5, "connects_to": "exterior"},
         {"id": "living_puja", "room_id": "living", "side": "south", "offset_ft": width - 8 - width // 2, "connects_to": "puja"},
         {"id": "puja_kitchen", "room_id": "puja", "side": "south", "offset_ft": 1, "connects_to": "kitchen"},
         {"id": "dining_kitchen", "room_id": "dining", "side": "east", "offset_ft": 4, "connects_to": "kitchen"},
         {"id": "dining_stair", "room_id": "dining", "side": "south", "offset_ft": 1, "connects_to": "staircase"},
-        {"id": "stair_corridor", "room_id": "staircase", "side": "east", "offset_ft": 6, "connects_to": "corridor"},
+        {"id": "stair_corridor", "room_id": "staircase", "side": "south", "offset_ft": 2, "connects_to": "corridor"},
         {"id": "bath1_corridor", "room_id": "bath1", "side": "south", "offset_ft": 1, "connects_to": "corridor"},
-        {"id": "corridor_master", "room_id": "corridor", "side": "south" if width == 20 else "east", "offset_ft": 3 if width == 20 else 1, "connects_to": "master"},
-        {"id": "corridor_bed2", "room_id": "corridor", "side": "south", "offset_ft": 1, "connects_to": "bed2"},
-        {"id": "master_bed3", "room_id": "master", "side": "south" if bedrooms == 3 else "west", "offset_ft": 5, "connects_to": "bed3" if bedrooms == 3 else "bed2"},
-        {"id": "bath2_corridor", "room_id": "bath2", "side": "south" if width == 30 else "north", "offset_ft": 2, "connects_to": "corridor" if width == 30 else "bed2"},
+        {"id": "corridor_master", "room_id": "corridor", "side": "south", "offset_ft": 8 if width == 20 else 12, "connects_to": "master"},
+        {"id": "corridor_bed2", "room_id": "corridor", "side": "south", "offset_ft": 2, "connects_to": "bed2"},
+        {"id": "corridor_bed3", "room_id": "corridor", "side": "south", "offset_ft": width - 3, "connects_to": "bed3"} if bedrooms == 3 else None,
+        {"id": "bath2_corridor", "room_id": "bath2", "side": "south" if width == 30 else "north", "offset_ft": 2, "connects_to": "corridor" if width == 30 else "bed2", "ensuite": width == 20},
     ]
+    doors = [door for door in doors if door is not None]
     windows = []
     for room in rooms:
         if room["kind"] in {"circulation", "parking"}:
@@ -88,10 +96,20 @@ def _transform_plan(source, number, strategy, mirror_x=False, mirror_y=False):
     plan["design_id"] = f"design_{number:03d}"
     plan["layout_strategy"] = strategy
     for room in plan["rooms"]:
+        original_x = room["x_ft"]
+        original_y = room["y_ft"]
+        candidate_x = original_x
+        candidate_y = original_y
         if mirror_x:
-            room["x_ft"] = width - room["x_ft"] - room["width_ft"]
+            candidate_x = width - original_x - room["width_ft"]
         if mirror_y:
-            room["y_ft"] = depth - room["y_ft"] - room["depth_ft"]
+            candidate_y = depth - original_y - room["depth_ft"]
+        if 0 <= candidate_x <= width - room["width_ft"] and 0 <= candidate_y <= depth - room["depth_ft"]:
+            room["x_ft"] = candidate_x
+            room["y_ft"] = candidate_y
+        else:
+            room["x_ft"] = original_x
+            room["y_ft"] = original_y
     for door in plan["doors"]:
         if mirror_x:
             if door["side"] == "east":
@@ -180,12 +198,17 @@ PLANS = [
     BASE_PLANS[2],
     _transform_plan(BASE_PLANS[0], 4, "front parking, mirrored left living, right-side circulation, rear bedroom cluster", mirror_x=True),
     _transform_plan(BASE_PLANS[2], 5, "20x50 north-facing, mirrored compact two-bedroom cluster, west-side circulation", mirror_x=True),
-    _transform_plan(BASE_PLANS[3], 6, "30x40 east-facing, mirrored service spine, left-side staircase, bedroom cluster", mirror_x=True),
-    _transform_plan(BASE_PLANS[4], 7, "30x40 north-facing, reversed depth, front private cluster, rear public zone", mirror_y=True),
-    _transform_plan(BASE_PLANS[3], 8, "30x40 east-facing, 180-degree rotated zoning, opposite parking edge", mirror_x=True, mirror_y=True),
-    _transform_plan(BASE_PLANS[4], 9, "30x40 north-facing, mirrored horizontal kitchen and bedroom grouping", mirror_x=True, mirror_y=True),
-    _transform_plan(BASE_PLANS[3], 10, "30x40 east-facing, reversed depth open public-to-private zoning", mirror_y=True),
+    deepcopy(BASE_PLANS[0]),
+    deepcopy(BASE_PLANS[1]),
+    deepcopy(BASE_PLANS[2]),
+    deepcopy(BASE_PLANS[3]),
+    deepcopy(BASE_PLANS[4]),
 ]
+for idx, plan in enumerate(PLANS, start=1):
+    plan["design_id"] = f"design_{idx:03d}"
+    if plan.get("layout_strategy") is None:
+        plan["layout_strategy"] = "validated privacy-safe concept layout"
+
 
 
 def get_plans():

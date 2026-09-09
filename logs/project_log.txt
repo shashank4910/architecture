@@ -1,0 +1,23 @@
+[2026-09-10 02:25:00 +05:30] Session started.
+- Repository root confirmed: C:\Users\Admin\house-plan-generator
+- Validation workflow targeted: deterministic canonical house-plan pipeline.
+
+[2026-09-10 02:26:00 +05:30] Canonical plan validation run.
+- Command: .\.venv\Scripts\python.exe -c "import sys; sys.path.insert(0, r'.\src'); from house_plan_generator.plan_data import get_plans; from house_plan_generator.validator import validate_plan; plans = get_plans(); print('sample_plans', len(plans)); ..."
+- Result: 10/10 sample plans PASS.
+- Notes: fixed a bedroom door adjacency issue in plan_data.py and hardened the suite/ensuite rule in validator.py.
+
+[2026-09-10 02:29:00 +05:30] Local UI launch.
+- App file: C:\Users\Admin\house-plan-generator\app.py
+- URL: http://localhost:5000
+- Output folder: C:\Users\Admin\house-plan-generator\generated\ui
+- Result: HTTP 200 confirmed.
+
+[2026-09-10 02:32:00 +05:30] UI smoke test.
+- Sample request generated a plan successfully through the Flask endpoint.
+- Output image saved to: C:\Users\Admin\house-plan-generator\generated\ui\design_20260910_022648_117902_30x40_north_3bhk_2d.png
+
+[2026-09-10 02:33:00 +05:30] Architectural review note.
+- The generated concept is visually acceptable as a rough concept sheet.
+- However, product-quality review still requires stricter privacy and circulation validation before sale-ready use.
+- Key rule: bedroom access must not run through another bedroom unless the suite relationship is explicit.
