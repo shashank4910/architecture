@@ -77,3 +77,9 @@ As of 2026-09-10:
 - Use the backend validator for architectural correctness checks.
 - Keep images in the generated folders and do not rely on AI as the ground truth.
 - Log file: `logs/project_log.txt`
+## Recent Update
+
+- Added bulk image generation to the local browser UI.
+- Each batch stores images in its own subfolder under `generated/ui/`.
+- The UI shows an Open folder link for the active batch.
+- The validated architecture remains strict: private rooms are not allowed to be accessed through another bedroom unless it is an explicit suite relationship.

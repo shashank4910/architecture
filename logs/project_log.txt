@@ -21,3 +21,9 @@
 - The generated concept is visually acceptable as a rough concept sheet.
 - However, product-quality review still requires stricter privacy and circulation validation before sale-ready use.
 - Key rule: bedroom access must not run through another bedroom unless the suite relationship is explicit.
+[2026-09-10 02:45:00 +05:30] Bulk UI update.
+- Added bulk generation controls to the browser UI.
+- Supported generation now includes quantity and batch-name fields in the form.
+- Images are saved under dedicated folders in `generated/ui/<batch_name>/`.
+- Added a folder browser route so the UI can open the active output folder directly.
+- Validation remains on the strict privacy-safe architecture rule.

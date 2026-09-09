@@ -51,12 +51,15 @@ Then open:
 http://localhost:5000
 ```
 
-Use the form to choose the house size, facing, and bedroom count, then click Generate. The images are saved under:
+Use the form to choose the house size, facing, bedroom count, quantity, and batch name. Click Generate 2D images to create a batch. Every batch is saved in a dedicated subfolder under:
 
 ```text
 generated/
   ui/
+    <batch_name>/
 ```
+
+The UI also includes an Open folder button that links directly to the generated image folder for that batch.
 
 5. Generate the canonical plans and deterministic local outputs:
 
