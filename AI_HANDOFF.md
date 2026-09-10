@@ -459,3 +459,17 @@ The continuation completed the bounded Step E pilot without mass-generating the 
 - **Full generator run** (`--max-attempts 60 --seconds 8 --workers 2`): status INCOMPLETE (exit 2), accepted 6 of 300. Rejections dominated by solver_unknown (44) and solver_infeasible (12); fit_bath/fit_kitchen 10; near_duplicate 3; walk_dining 1. Confirms near-zero solver yield. No mass render (gate refuses incomplete bank).
 - **Verification:** compileall clean; full unittest suite 108/108 OK.
 - **Honest status:** 6 of 300 accepted; ~294 short; INCOMPLETE; nothing approved. Next work: author more validated strategy seeds for the largest-shortfall groups (20x50 2BHK, 30x50 3BHK, 30x40 3BHK). Do not re-run the solver expecting a different yield, and do not fake diversity or disable gates to reach 300.
+
+
+## 16. Strategy-driven template generator (2026-09-10)
+
+Per user instruction, unrestricted CP-SAT layout search is no longer the growth path. A strategy-driven template generator now exists:
+
+- `src/house_plan_generator/template_generator.py`: `MasterTemplate` schema (fixed topology, zoning, room relationships, ensuite ownership, entry room, and approved parameter ranges with an optional validity guard), a structural exact-tiling check (`tiling_error`), and `generate_from_template()` that runs the existing gates in order (tiling -> `assemble_layout` -> `validate_catalog_plan` -> `DiversityIndex`) and only ever emits accepted plans. No gate is weakened; duplicate/near-duplicate detection is preserved.
+- `src/house_plan_generator/template_library.py`: master templates for 20x50 2BHK (store/no-store) and 30x50 3BHK (master ensuite). Every approved parameter combination provably tiles the plot exactly (band/column construction; enforced by tests). Parameters only move interior split lines within safe ranges.
+- `scripts/generate_from_templates.py`: CLI that generates at most N candidates per template (default 10), renders only accepted candidates, and reports exact per-template yield. Never runs the 300 solver.
+- `tests/test_template_generator.py`: locks exact tiling, the per-template cap, duplicate rejection (never faked), and validation of accepted plans.
+
+Honest first-pass yield: **0 new accepted**. The three seed templates are anchored on the already-accepted E01/E03/E04 geometries, so their in-range variations are correctly rejected by the (mirror-invariant) diversity gate, and out-of-range proportions fail furniture fit. This is the intended behaviour and an important finding: varying parameters of a single strategy does not produce architecturally distinct plans. Growth requires authoring MANY genuinely different strategy templates per group (distinct spines, zoning, stair/entry placement), added incrementally and each proven through all gates.
+
+Verification: compileall clean; full suite 114/114 OK. Catalogue remains INCOMPLETE; known accepted count unchanged at 5 of 300. Next work: author additional distinct-topology templates per high-shortfall group and re-run the template CLI (not the solver).
