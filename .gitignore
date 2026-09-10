@@ -27,6 +27,10 @@ generated/
 !generated/.gitkeep
 plans/*
 !plans/curated/
+!plans/step_e_pilot/
+!plans/step_e_pilot/*.json
+!plans/step_e_pilot/preview/
+!plans/step_e_pilot/preview/*.png
 /src/plans/
 /work/
 validation/

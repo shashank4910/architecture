@@ -1,0 +1,733 @@
+{
+  "design_id": "step_e_e01",
+  "plot": {
+    "width_ft": 20,
+    "depth_ft": 50,
+    "facing": "north"
+  },
+  "floors": 1,
+  "bedrooms": 2,
+  "bathrooms": 1,
+  "rooms": [
+    {
+      "id": "parking",
+      "name": "Car Porch",
+      "kind": "parking",
+      "role": "parking",
+      "x_ft": 0,
+      "y_ft": 0,
+      "width_ft": 9,
+      "depth_ft": 16,
+      "label_lines": [
+        "CAR",
+        "PORCH"
+      ],
+      "label_font_size": 18,
+      "dimension_font_size": 11,
+      "label_position_ft": [
+        7.55,
+        8.25
+      ]
+    },
+    {
+      "id": "living",
+      "name": "Living Dining",
+      "kind": "habitable",
+      "role": "living",
+      "x_ft": 9,
+      "y_ft": 0,
+      "width_ft": 11,
+      "depth_ft": 16,
+      "combined_living_dining": true,
+      "label_lines": [
+        "LIVING",
+        "DINING"
+      ],
+      "label_font_size": 18,
+      "dimension_font_size": 11,
+      "label_position_ft": [
+        14.25,
+        8.25
+      ]
+    },
+    {
+      "id": "staircase",
+      "name": "Terrace Stair",
+      "kind": "staircase",
+      "role": "staircase",
+      "x_ft": 0,
+      "y_ft": 16,
+      "width_ft": 8,
+      "depth_ft": 13,
+      "label_lines": [
+        "TERRACE",
+        "STAIR"
+      ],
+      "label_font_size": 18,
+      "dimension_font_size": 11,
+      "label_position_ft": [
+        4.25,
+        22.5
+      ]
+    },
+    {
+      "id": "hall",
+      "name": "Lobby",
+      "kind": "circulation",
+      "role": "circulation",
+      "x_ft": 8,
+      "y_ft": 16,
+      "width_ft": 5,
+      "depth_ft": 19,
+      "label_font_size": 18,
+      "dimension_font_size": 11,
+      "label_position_ft": [
+        10.5,
+        25.5
+      ]
+    },
+    {
+      "id": "store",
+      "name": "Store",
+      "kind": "store",
+      "role": "store",
+      "x_ft": 13,
+      "y_ft": 16,
+      "width_ft": 7,
+      "depth_ft": 7,
+      "label_font_size": 18,
+      "dimension_font_size": 11,
+      "label_position_ft": [
+        16.25,
+        19.5
+      ]
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "kind": "kitchen",
+      "role": "kitchen",
+      "x_ft": 13,
+      "y_ft": 23,
+      "width_ft": 7,
+      "depth_ft": 12,
+      "label_font_size": 18,
+      "dimension_font_size": 11,
+      "label_position_ft": [
+        15.65,
+        29.0
+      ]
+    },
+    {
+      "id": "bath1",
+      "name": "Common Bath",
+      "kind": "bathroom",
+      "role": "bathroom",
+      "x_ft": 0,
+      "y_ft": 29,
+      "width_ft": 8,
+      "depth_ft": 6,
+      "label_lines": [
+        "COMMON",
+        "BATH"
+      ],
+      "label_font_size": 18,
+      "dimension_font_size": 11,
+      "label_position_ft": [
+        3.55,
+        32.0
+      ]
+    },
+    {
+      "id": "hall2",
+      "name": "Lobby",
+      "kind": "circulation",
+      "role": "circulation",
+      "x_ft": 0,
+      "y_ft": 35,
+      "width_ft": 20,
+      "depth_ft": 4,
+      "label_font_size": 18,
+      "dimension_font_size": 11,
+      "label_position_ft": [
+        10.0,
+        37.0
+      ]
+    },
+    {
+      "id": "master",
+      "name": "Master Bedroom",
+      "kind": "habitable",
+      "role": "bedroom",
+      "x_ft": 0,
+      "y_ft": 39,
+      "width_ft": 11,
+      "depth_ft": 11,
+      "label_lines": [
+        "MASTER",
+        "BEDROOM"
+      ],
+      "label_font_size": 18,
+      "dimension_font_size": 11,
+      "label_position_ft": [
+        5.75,
+        41.75
+      ]
+    },
+    {
+      "id": "bed2",
+      "name": "Bedroom 2",
+      "kind": "habitable",
+      "role": "bedroom",
+      "x_ft": 11,
+      "y_ft": 39,
+      "width_ft": 9,
+      "depth_ft": 11,
+      "label_lines": [
+        "BEDROOM",
+        "2"
+      ],
+      "label_font_size": 18,
+      "dimension_font_size": 11,
+      "label_position_ft": [
+        15.25,
+        41.75
+      ]
+    }
+  ],
+  "door_offset_convention": "start",
+  "walls": {
+    "external_reserve_ft": 0.75,
+    "internal_half_ft": 0.25
+  },
+  "assumptions": [
+    "North-facing conceptual full-plot planning envelope. Statutory setbacks have not been deducted.",
+    "Side/rear windows assume legally available open air; party-wall sites require redesign.",
+    "Interior bathrooms require a designed mechanical exhaust route to the roof; daylight and ventilation remain site-review items.",
+    "Wall allowances: 9 in at plot edge, 3 in each side of internal centerlines; printed dimensions are planning cells.",
+    "Stair assumes 9 ft floor height, 16 risers and 10 in goings; headroom, structure and upper arrival need local review.",
+    "Southwest master and east kitchen are selected Vastu preferences, not a guarantee of full compliance.",
+    "Master bed is 5 x 6.5 ft; secondary rooms may use a 3.5 x 6.5 ft single where a double does not fit. Minimum declared bedside space is 1.5 ft.",
+    "Automated checks and contact-sheet review do not constitute professional architectural or code approval."
+  ],
+  "dimension_note": "ROOM SIZES: PLANNING CELLS; CLEAR SIZES ALLOW FOR WALLS",
+  "disclaimer": "CONCEPT ONLY. Setbacks, ventilation rights, structural design and stair headroom require local review.",
+  "doors": [
+    {
+      "id": "entrance",
+      "room_id": "living",
+      "side": "north",
+      "offset_ft": 0.25,
+      "width_ft": 3,
+      "connects_to": "exterior",
+      "opening_type": "swing",
+      "hinge": "start"
+    },
+    {
+      "id": "car_gate",
+      "room_id": "parking",
+      "side": "north",
+      "offset_ft": 0.75,
+      "width_ft": 7.5,
+      "connects_to": "exterior",
+      "opening_type": "gate"
+    },
+    {
+      "id": "d_living_hall_2",
+      "room_id": "living",
+      "side": "south",
+      "offset_ft": 0.25,
+      "width_ft": 3,
+      "connects_to": "hall",
+      "opening_type": "open",
+      "hinge": "start"
+    },
+    {
+      "id": "d_hall_hall2_3",
+      "room_id": "hall",
+      "side": "south",
+      "offset_ft": 0.25,
+      "width_ft": 3,
+      "connects_to": "hall2",
+      "opening_type": "open",
+      "hinge": "start"
+    },
+    {
+      "id": "d_staircase_hall_4",
+      "room_id": "staircase",
+      "side": "east",
+      "offset_ft": 0.25,
+      "width_ft": 3,
+      "connects_to": "hall",
+      "opening_type": "open",
+      "hinge": "start"
+    },
+    {
+      "id": "d_store_hall_5",
+      "room_id": "store",
+      "side": "west",
+      "offset_ft": 2.5,
+      "width_ft": 2.75,
+      "connects_to": "hall",
+      "opening_type": "swing",
+      "hinge": "end"
+    },
+    {
+      "id": "d_kitchen_hall_6",
+      "room_id": "kitchen",
+      "side": "west",
+      "offset_ft": 2.25,
+      "width_ft": 2.75,
+      "connects_to": "hall",
+      "opening_type": "open",
+      "hinge": "start"
+    },
+    {
+      "id": "d_bath1_hall2_7",
+      "room_id": "bath1",
+      "side": "south",
+      "offset_ft": 4.75,
+      "width_ft": 2.75,
+      "connects_to": "hall2",
+      "opening_type": "swing",
+      "hinge": "start"
+    },
+    {
+      "id": "d_master_hall2_8",
+      "room_id": "master",
+      "side": "north",
+      "offset_ft": 7.0,
+      "width_ft": 3,
+      "connects_to": "hall2",
+      "opening_type": "swing",
+      "hinge": "end"
+    },
+    {
+      "id": "d_bed2_hall2_9",
+      "room_id": "bed2",
+      "side": "north",
+      "offset_ft": 4.75,
+      "width_ft": 3,
+      "connects_to": "hall2",
+      "opening_type": "swing",
+      "hinge": "start"
+    }
+  ],
+  "windows": [
+    {
+      "id": "w_living",
+      "room_id": "living",
+      "side": "north",
+      "offset_ft": 3.5,
+      "width_ft": 4,
+      "sill_height_ft": 3
+    },
+    {
+      "id": "w_staircase",
+      "room_id": "staircase",
+      "side": "west",
+      "offset_ft": 4.5,
+      "width_ft": 4,
+      "sill_height_ft": 3
+    },
+    {
+      "id": "w_kitchen",
+      "room_id": "kitchen",
+      "side": "east",
+      "offset_ft": 4.0,
+      "width_ft": 4,
+      "sill_height_ft": 3
+    },
+    {
+      "id": "w_bath1",
+      "room_id": "bath1",
+      "side": "west",
+      "offset_ft": 2.0,
+      "width_ft": 2,
+      "sill_height_ft": 5
+    },
+    {
+      "id": "w_master",
+      "room_id": "master",
+      "side": "south",
+      "offset_ft": 3.5,
+      "width_ft": 4,
+      "sill_height_ft": 3
+    },
+    {
+      "id": "w_bed2",
+      "room_id": "bed2",
+      "side": "south",
+      "offset_ft": 2.5,
+      "width_ft": 4,
+      "sill_height_ft": 3
+    }
+  ],
+  "stairs": [
+    {
+      "id": "main_stair",
+      "room_id": "staircase",
+      "width_ft": 7.0,
+      "depth_ft": 12.5,
+      "riser_count": 16,
+      "entrance_door_id": "d_staircase_hall_4",
+      "layout": "dogleg",
+      "floor_height_ft": 9,
+      "flight_width_ft": 3,
+      "going_ft": 0.8333333333333334,
+      "landing_ft": 3,
+      "orientation": "vertical",
+      "reverse": false,
+      "clear_bounds_ft": [
+        0.75,
+        16.25,
+        7.75,
+        28.75
+      ],
+      "flight_x_ft": [
+        0.75,
+        4.75
+      ],
+      "flight_y_ft": 19.25
+    }
+  ],
+  "parking": [
+    {
+      "id": "car_1",
+      "room_id": "parking",
+      "width_ft": 9,
+      "depth_ft": 16
+    }
+  ],
+  "furniture": [
+    {
+      "id": "store_shelves_1",
+      "room_id": "store",
+      "kind": "shelves",
+      "x_ft": 13.25,
+      "y_ft": 16.25,
+      "width_ft": 6.0,
+      "depth_ft": 1.25
+    },
+    {
+      "id": "kitchen_counter_2",
+      "room_id": "kitchen",
+      "kind": "counter",
+      "x_ft": 13.25,
+      "y_ft": 23.25,
+      "width_ft": 6.0,
+      "depth_ft": 2
+    },
+    {
+      "id": "kitchen_counter_3",
+      "room_id": "kitchen",
+      "kind": "counter",
+      "x_ft": 17.25,
+      "y_ft": 25.25,
+      "width_ft": 2,
+      "depth_ft": 7.0
+    },
+    {
+      "id": "kitchen_fridge_4",
+      "room_id": "kitchen",
+      "kind": "fridge",
+      "x_ft": 13.25,
+      "y_ft": 32.25,
+      "width_ft": 2.5,
+      "depth_ft": 2.5
+    },
+    {
+      "id": "bath1_shower_5",
+      "room_id": "bath1",
+      "kind": "shower",
+      "x_ft": 4.75,
+      "y_ft": 29.25,
+      "width_ft": 3,
+      "depth_ft": 3
+    },
+    {
+      "id": "bath1_wc_6",
+      "room_id": "bath1",
+      "kind": "wc",
+      "x_ft": 0.75,
+      "y_ft": 32.949999999999996,
+      "width_ft": 2.4,
+      "depth_ft": 1.6,
+      "rotation": 3
+    },
+    {
+      "id": "bath1_sink_7",
+      "room_id": "bath1",
+      "kind": "sink",
+      "x_ft": 0.75,
+      "y_ft": 29.25,
+      "width_ft": 1.4,
+      "depth_ft": 1.6
+    },
+    {
+      "id": "master_bed_8",
+      "room_id": "master",
+      "kind": "bed",
+      "x_ft": 3.25,
+      "y_ft": 42.75,
+      "width_ft": 5,
+      "depth_ft": 6.5,
+      "head": "south"
+    },
+    {
+      "id": "master_wardrobe_9",
+      "room_id": "master",
+      "kind": "wardrobe",
+      "x_ft": 0.75,
+      "y_ft": 39.25,
+      "width_ft": 2,
+      "depth_ft": 3
+    },
+    {
+      "id": "bed2_bed_10",
+      "room_id": "bed2",
+      "kind": "bed",
+      "x_ft": 13.5,
+      "y_ft": 42.75,
+      "width_ft": 3.5,
+      "depth_ft": 6.5,
+      "head": "south"
+    },
+    {
+      "id": "bed2_wardrobe_11",
+      "room_id": "bed2",
+      "kind": "wardrobe",
+      "x_ft": 11.25,
+      "y_ft": 39.25,
+      "width_ft": 2,
+      "depth_ft": 3
+    },
+    {
+      "id": "living_sofa_12",
+      "room_id": "living",
+      "kind": "sofa",
+      "x_ft": 16.45,
+      "y_ft": 9.25,
+      "width_ft": 2.8,
+      "depth_ft": 6.2
+    },
+    {
+      "id": "living_table_13",
+      "room_id": "living",
+      "kind": "table",
+      "x_ft": 13.45,
+      "y_ft": 10.85,
+      "width_ft": 1.5,
+      "depth_ft": 3
+    },
+    {
+      "id": "living_tv_14",
+      "room_id": "living",
+      "kind": "tv",
+      "x_ft": 9.25,
+      "y_ft": 9.15,
+      "width_ft": 0.5,
+      "depth_ft": 4
+    },
+    {
+      "id": "living_table_15",
+      "room_id": "living",
+      "kind": "table",
+      "x_ft": 15.25,
+      "y_ft": 2.6999999999999993,
+      "width_ft": 3.5,
+      "depth_ft": 2.5
+    },
+    {
+      "id": "living_chair_16",
+      "room_id": "living",
+      "kind": "chair",
+      "x_ft": 17.35,
+      "y_ft": 5.399999999999999,
+      "width_ft": 1.25,
+      "depth_ft": 1.25
+    },
+    {
+      "id": "living_chair_17",
+      "room_id": "living",
+      "kind": "chair",
+      "x_ft": 17.35,
+      "y_ft": 1.25,
+      "width_ft": 1.25,
+      "depth_ft": 1.25
+    },
+    {
+      "id": "living_chair_18",
+      "room_id": "living",
+      "kind": "chair",
+      "x_ft": 15.399999999999999,
+      "y_ft": 5.399999999999999,
+      "width_ft": 1.25,
+      "depth_ft": 1.25
+    },
+    {
+      "id": "living_chair_19",
+      "room_id": "living",
+      "kind": "chair",
+      "x_ft": 15.399999999999999,
+      "y_ft": 1.25,
+      "width_ft": 1.25,
+      "depth_ft": 1.25
+    },
+    {
+      "id": "parking_car_20",
+      "room_id": "parking",
+      "kind": "car",
+      "x_ft": 0.85,
+      "y_ft": 1.75,
+      "width_ft": 5.8,
+      "depth_ft": 12
+    }
+  ],
+  "clearances": [
+    {
+      "id": "store_shelf_use_1",
+      "room_id": "store",
+      "kind": "clearance",
+      "x_ft": 13.25,
+      "y_ft": 17.5,
+      "width_ft": 6.0,
+      "depth_ft": 2.5,
+      "purpose": "shelf_use"
+    },
+    {
+      "id": "kitchen_kitchen_work_2",
+      "room_id": "kitchen",
+      "kind": "clearance",
+      "x_ft": 13.25,
+      "y_ft": 25.25,
+      "width_ft": 4.0,
+      "depth_ft": 7.0,
+      "purpose": "kitchen_work"
+    },
+    {
+      "id": "kitchen_fridge_use_3",
+      "room_id": "kitchen",
+      "kind": "clearance",
+      "x_ft": 13.25,
+      "y_ft": 29.75,
+      "width_ft": 2.5,
+      "depth_ft": 2.5,
+      "purpose": "fridge_use"
+    },
+    {
+      "id": "bath1_shower_approach_4",
+      "room_id": "bath1",
+      "kind": "clearance",
+      "x_ft": 2.75,
+      "y_ft": 29.25,
+      "width_ft": 2,
+      "depth_ft": 3,
+      "purpose": "shower_approach"
+    },
+    {
+      "id": "bath1_wc_front_5",
+      "room_id": "bath1",
+      "kind": "clearance",
+      "x_ft": 3.15,
+      "y_ft": 32.949999999999996,
+      "width_ft": 2,
+      "depth_ft": 1.6,
+      "purpose": "wc_front"
+    },
+    {
+      "id": "bath1_basin_front_6",
+      "room_id": "bath1",
+      "kind": "clearance",
+      "x_ft": 2.15,
+      "y_ft": 29.25,
+      "width_ft": 1.5,
+      "depth_ft": 1.6,
+      "purpose": "basin_front"
+    },
+    {
+      "id": "master_bedside_7",
+      "room_id": "master",
+      "kind": "clearance",
+      "x_ft": 1.75,
+      "y_ft": 42.75,
+      "width_ft": 1.5,
+      "depth_ft": 6.5,
+      "purpose": "bedside"
+    },
+    {
+      "id": "master_bedside_8",
+      "room_id": "master",
+      "kind": "clearance",
+      "x_ft": 8.25,
+      "y_ft": 42.75,
+      "width_ft": 1.5,
+      "depth_ft": 6.5,
+      "purpose": "bedside"
+    },
+    {
+      "id": "master_bedfoot_9",
+      "room_id": "master",
+      "kind": "clearance",
+      "x_ft": 3.25,
+      "y_ft": 40.25,
+      "width_ft": 5,
+      "depth_ft": 2.5,
+      "purpose": "bedfoot"
+    },
+    {
+      "id": "master_wardrobe_use_10",
+      "room_id": "master",
+      "kind": "clearance",
+      "x_ft": 2.75,
+      "y_ft": 39.25,
+      "width_ft": 2.5,
+      "depth_ft": 3,
+      "purpose": "wardrobe_use"
+    },
+    {
+      "id": "bed2_bedside_11",
+      "room_id": "bed2",
+      "kind": "clearance",
+      "x_ft": 12.0,
+      "y_ft": 42.75,
+      "width_ft": 1.5,
+      "depth_ft": 6.5,
+      "purpose": "bedside"
+    },
+    {
+      "id": "bed2_bedside_12",
+      "room_id": "bed2",
+      "kind": "clearance",
+      "x_ft": 17.0,
+      "y_ft": 42.75,
+      "width_ft": 1.5,
+      "depth_ft": 6.5,
+      "purpose": "bedside"
+    },
+    {
+      "id": "bed2_bedfoot_13",
+      "room_id": "bed2",
+      "kind": "clearance",
+      "x_ft": 13.5,
+      "y_ft": 40.25,
+      "width_ft": 3.5,
+      "depth_ft": 2.5,
+      "purpose": "bedfoot"
+    },
+    {
+      "id": "bed2_wardrobe_use_14",
+      "room_id": "bed2",
+      "kind": "clearance",
+      "x_ft": 13.25,
+      "y_ft": 39.25,
+      "width_ft": 2.5,
+      "depth_ft": 3,
+      "purpose": "wardrobe_use"
+    }
+  ],
+  "pilot_seed_id": "E01",
+  "layout_strategy": "front social band, central lobby, split service band, rear bedroom pair with usable store",
+  "provenance": "Step E authored pilot geometry; reassembled with existing furnishing and validation gates using assembly seed 610",
+  "generation_source": "step_e_structural_seed_pilot"
+}

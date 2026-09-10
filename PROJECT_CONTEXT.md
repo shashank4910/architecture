@@ -57,6 +57,7 @@ The active pipeline:
 - `src/house_plan_generator/renderer_2d.py` / `curated_furniture.py`: deterministic 2D renderer and orientation-aware furniture drawing
 - `plans/curated/`: tracked C01/C02 canonical JSON used as regression fixtures
 - `scripts/generate_300_2d_batch.py`: bulk CLI (JSON search, bootstrap, preview)
+- `scripts/validate_step_e_pilot.py`: bounded validator/renderer for the accepted Step E pilot only
 - `data/catalog_targets.json`, `data/structural_seeds.json`: quota config and reproducible seeds
 - `tests/`: unittest modules
 
@@ -70,7 +71,9 @@ Runtime output is gitignored:
 ## Current Status
 
 - The pipeline is fail-closed and reports INCOMPLETE with the exact shortfall until a full, reviewed bank exists.
-- The solver has produced no proven accepted catalogue yet; solver yield and diversity are unproven at 300 (100 per plot size).
+- The known accepted bank is 4 of 300: one pre-existing 30x50 4BHK concept plus three newly accepted Step E pilot seeds. This does not establish solver yield or catalogue diversity at 300.
+- The Step E pilot covers 20x50 2BHK with store, 30x40 2BHK with store, and 20x50 2BHK without store; it accepted 3/3 candidates, rejected 0, and rendered 3 previews for assistant-level inspection. All remain conceptual and pending professional review.
+- The catalogue remains INCOMPLETE with a 296-plan shortfall; no 3BHK seed was forced because none passed every existing gate.
 - The UI serves only the validated bank.
 - `curated_furniture.py` now draws the orientation metadata (bed heads N/W/S/E, rotated sofas, WC quarter-turns, shelves, short rotated counters, and horizontal/reverse stairs) inside authored footprints, with pure-geometry regression tests.
 

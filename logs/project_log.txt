@@ -67,3 +67,11 @@
 - Finding: the current 20x50 2BHK geometry needs a deliberate architectural strategy review, especially parking depth, direct circulation to both bedrooms, stair/furniture minimums, and the tight remaining depth. These probe failures do not prove the quota is impossible, but ad-hoc coordinate nudges are not a responsible path to 300.
 - Decision: stop Step E iteration here and request a detailed expert design/schema plan before authoring more seeds. Preserve fail-closed validation and do not relax diversity or furniture rules.
 - Session status remains: 1 accepted concept of 300, 0 approved; existing pipeline code unchanged. Temporary probe files are being removed before review commit.
+
+[2026-09-10 Step E pilot] Bounded diversity and seed validation completed.
+- Fixed the two diversity test fixtures only: added explicit semantic roles and replaced the false-distinct fixture with a genuinely different fully tiled layout. Focused diversity tests: 10/10.
+- Added exactly three accepted structural seeds with strategy/provenance/assembly_seed metadata: E01 20x50 2BHK with usable store; E02 30x40 2BHK with usable store; E03 20x50 2BHK without store.
+- `scripts/validate_step_e_pilot.py` accepted 3/3 pilot candidates and rejected 0. Every accepted candidate passed the existing assembly, catalogue validation, furniture/store/stair, exact-tiling and DiversityIndex gates. No 3BHK seed was forced.
+- Rendered exactly three new pilot PNGs and inspected each individually. Assistant notes: E01 broad 20x4 lobby; E02 compact 7x7 bath; E03 compact 6.5x8 kitchen/bath circulation. All remain conceptual and pending professional review.
+- Final verification: compileall passed; full unittest suite passed 105/105. No 300-plan generation was run.
+- Known accepted count is 4/300 including the prior accepted 30x50 4BHK concept; catalogue remains INCOMPLETE with a 296-plan shortfall. Rejected pilot candidates: none.

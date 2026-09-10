@@ -19,6 +19,7 @@ Only the following are supported today. Anything else requires real design work 
 - The 2D renderer `renderer_2d.py` and orientation-aware furniture drawing `curated_furniture.py`
 - Tracked curated regression fixtures under `plans/curated/` (C01, C02)
 - Bulk CLI `scripts/generate_300_2d_batch.py`
+- Bounded Step E pilot validator `scripts/validate_step_e_pilot.py`
 - Tests under `tests/`
 
 ## Core architecture
@@ -86,6 +87,24 @@ python -m unittest tests.test_validator tests.test_renderer_orientation -v
 `--preview N` renders exactly N accepted candidates (a positive count). Then **inspect every PNG produced**, both the contact sheet and full-size, for architectural correctness and readability.
 
 **Exit codes:** the CLI returns **exit code 2 for INCOMPLETE** — including a successful partial preview when the full bank of 300 is not yet accepted. Exit code 2 is the expected, honest status until the solver produces a complete, reviewed bank; it is not a crash.
+
+## Step E pilot
+
+A bounded pilot now exists at `plans/step_e_pilot/`. It contains three newly accepted structural seeds, each passing exact half-foot plot tiling, `assemble_layout`, `validate_catalog_plan`, and `DiversityIndex` checks:
+
+- E01: 20x50, 2BHK, with usable store; front social band and central lobby.
+- E02: 30x40, 2BHK, with usable store; east stair/service cluster and separate dining.
+- E03: 20x50, 2BHK, without store; front stair and central living-dining with rear bedroom pair.
+
+Validate the pilot without running the 300-plan generator:
+
+```powershell
+$env:PYTHONPATH = 'src'
+.\.venv\Scripts\python.exe scripts\validate_step_e_pilot.py
+.\.venv\Scripts\python.exe scripts\validate_step_e_pilot.py --render
+```
+
+The pilot accepted 3 new plans and rejected 0. Three PNGs were rendered and individually inspected. This is assistant-level inspection only; the plans remain conceptual and pending professional review. Including the previous accepted plan, the known accepted count is 4 of 300, so the catalogue remains INCOMPLETE with a 296-plan shortfall. No 3BHK seed was forced because none was proven by all existing gates.
 
 ## Status
 

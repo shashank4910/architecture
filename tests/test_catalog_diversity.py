@@ -23,10 +23,10 @@ def base_plan():
         'plot': {'width_ft': 20, 'depth_ft': 50, 'facing': 'north'},
         'bedrooms': 2,
         'rooms': [
-            {'id': 'living', 'kind': 'habitable', 'name': 'Living', 'x_ft': 0, 'y_ft': 0, 'width_ft': 20, 'depth_ft': 20},
-            {'id': 'kitchen', 'kind': 'kitchen', 'name': 'Kitchen', 'x_ft': 0, 'y_ft': 20, 'width_ft': 10, 'depth_ft': 10},
-            {'id': 'master', 'kind': 'habitable', 'name': 'Master bedroom', 'x_ft': 10, 'y_ft': 20, 'width_ft': 10, 'depth_ft': 10},
-            {'id': 'bed2', 'kind': 'habitable', 'name': 'Bedroom 2', 'x_ft': 0, 'y_ft': 30, 'width_ft': 20, 'depth_ft': 20},
+            {'id': 'living', 'kind': 'habitable', 'role': 'living', 'name': 'Living', 'x_ft': 0, 'y_ft': 0, 'width_ft': 20, 'depth_ft': 20},
+            {'id': 'kitchen', 'kind': 'kitchen', 'role': 'kitchen', 'name': 'Kitchen', 'x_ft': 0, 'y_ft': 20, 'width_ft': 10, 'depth_ft': 10},
+            {'id': 'master', 'kind': 'habitable', 'role': 'bedroom', 'name': 'Master bedroom', 'x_ft': 10, 'y_ft': 20, 'width_ft': 10, 'depth_ft': 10},
+            {'id': 'bed2', 'kind': 'habitable', 'role': 'bedroom', 'name': 'Bedroom 2', 'x_ft': 0, 'y_ft': 30, 'width_ft': 20, 'depth_ft': 20},
         ],
         'doors': [
             {'id': 'd1', 'room_id': 'living', 'connects_to': 'kitchen', 'side': 'south', 'offset_ft': 1, 'width_ft': 3},
@@ -121,10 +121,10 @@ class DiversityIndexTests(unittest.TestCase):
         idx.add(base_plan())
         p = base_plan()
         p['rooms'] = [
-            {'id': 'living', 'kind': 'habitable', 'name': 'Living', 'x_ft': 0, 'y_ft': 30, 'width_ft': 20, 'depth_ft': 20},
-            {'id': 'kitchen', 'kind': 'kitchen', 'name': 'Kitchen', 'x_ft': 10, 'y_ft': 20, 'width_ft': 10, 'depth_ft': 10},
-            {'id': 'master', 'kind': 'habitable', 'name': 'Master bedroom', 'x_ft': 0, 'y_ft': 0, 'width_ft': 10, 'depth_ft': 20},
-            {'id': 'bed2', 'kind': 'habitable', 'name': 'Bedroom 2', 'x_ft': 10, 'y_ft': 0, 'width_ft': 10, 'depth_ft': 20},
+            {'id': 'living', 'kind': 'habitable', 'role': 'living', 'name': 'Living', 'x_ft': 0, 'y_ft': 0, 'width_ft': 20, 'depth_ft': 10},
+            {'id': 'kitchen', 'kind': 'kitchen', 'role': 'kitchen', 'name': 'Kitchen', 'x_ft': 0, 'y_ft': 10, 'width_ft': 10, 'depth_ft': 15},
+            {'id': 'master', 'kind': 'habitable', 'role': 'bedroom', 'name': 'Master bedroom', 'x_ft': 10, 'y_ft': 10, 'width_ft': 10, 'depth_ft': 15},
+            {'id': 'bed2', 'kind': 'habitable', 'role': 'bedroom', 'name': 'Bedroom 2', 'x_ft': 0, 'y_ft': 25, 'width_ft': 20, 'depth_ft': 25},
         ]
         reason, score = idx.check(p)
         self.assertIsNone(reason)

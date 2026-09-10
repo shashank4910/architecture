@@ -362,5 +362,86 @@
         ]
       }
     }
+  },
+  {
+    "seed_id": "E01",
+    "width": 20,
+    "depth": 50,
+    "bedrooms": 2,
+    "store": true,
+    "strategy": "front social band, central lobby, split service band, rear bedroom pair with usable store",
+    "provenance": "Step E authored pilot geometry; reassembled with existing furnishing and validation gates using assembly seed 610",
+    "assembly_seed": 610,
+    "raw": {
+      "status": "AUTHORED_SEED",
+      "entry": "living",
+      "combined_living_dining": true,
+      "rooms": {
+        "parking": [0, 0, 9, 16],
+        "living": [9, 0, 11, 16],
+        "staircase": [0, 16, 8, 13],
+        "hall": [8, 16, 5, 19],
+        "store": [13, 16, 7, 7],
+        "kitchen": [13, 23, 7, 12],
+        "bath1": [0, 29, 8, 6],
+        "hall2": [0, 35, 20, 4],
+        "master": [0, 39, 11, 11],
+        "bed2": [11, 39, 9, 11]
+      }
+    }
+  },
+  {
+    "seed_id": "E02",
+    "width": 30,
+    "depth": 40,
+    "bedrooms": 2,
+    "store": true,
+    "strategy": "east stair and service cluster, separate dining, rear private bedroom band",
+    "provenance": "Promoted candidate_29 geometry; revalidated as Step E pilot with existing gates using assembly seed 611",
+    "assembly_seed": 611,
+    "raw": {
+      "status": "AUTHORED_SEED",
+      "entry": "living",
+      "combined_living_dining": false,
+      "rooms": {
+        "parking": [0, 0, 10, 16],
+        "living": [10, 0, 12, 16],
+        "dining": [22, 28, 8, 12],
+        "kitchen": [22, 20, 8, 8],
+        "staircase": [22, 0, 8, 13],
+        "bath1": [15, 33, 7, 7],
+        "master": [0, 29, 15, 11],
+        "bed2": [0, 16, 15, 13],
+        "hall": [15, 16, 7, 17],
+        "store": [22, 13, 8, 7]
+      }
+    }
+  },
+  {
+    "seed_id": "E03",
+    "width": 20,
+    "depth": 50,
+    "bedrooms": 2,
+    "store": false,
+    "strategy": "front stair, central living-dining, compact lobby, rear bedroom pair",
+    "provenance": "Promoted C02 authored geometry; reassembled as Step E pilot with existing gates using assembly seed 612",
+    "assembly_seed": 612,
+    "raw": {
+      "status": "AUTHORED_SEED",
+      "entry": "hall0",
+      "combined_living_dining": false,
+      "rooms": {
+        "staircase": [0, 0, 7.5, 13],
+        "hall0": [7.5, 0, 3.5, 13],
+        "parking": [11, 0, 9, 16],
+        "living": [0, 13, 11, 15],
+        "dining": [11, 16, 9, 12],
+        "bath1": [0, 28, 6.5, 8],
+        "hall": [6.5, 28, 7, 8],
+        "kitchen": [13.5, 28, 6.5, 8],
+        "master": [0, 36, 10, 14],
+        "bed2": [10, 36, 10, 14]
+      }
+    }
   }
 ]

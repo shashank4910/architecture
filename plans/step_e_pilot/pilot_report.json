@@ -1,0 +1,55 @@
+{
+  "pilot": "Step E",
+  "seed_count": 3,
+  "accepted": 3,
+  "rejected": 0,
+  "results": [
+    {
+      "seed_id": "E01",
+      "group": {
+        "width": 20,
+        "depth": 50,
+        "bedrooms": 2,
+        "store": true
+      },
+      "status": "ACCEPTED",
+      "canonical": "plans\\step_e_pilot\\e01_20x50_2bhk_store.json",
+      "similarity": 0,
+      "image": "plans\\step_e_pilot\\preview\\e01_20x50_2bhk_store.png",
+      "image_status": "rendered"
+    },
+    {
+      "seed_id": "E02",
+      "group": {
+        "width": 30,
+        "depth": 40,
+        "bedrooms": 2,
+        "store": true
+      },
+      "status": "ACCEPTED",
+      "canonical": "plans\\step_e_pilot\\e02_30x40_2bhk_store.json",
+      "similarity": 0,
+      "image": "plans\\step_e_pilot\\preview\\e02_30x40_2bhk_store.png",
+      "image_status": "rendered"
+    },
+    {
+      "seed_id": "E03",
+      "group": {
+        "width": 20,
+        "depth": 50,
+        "bedrooms": 2,
+        "store": false
+      },
+      "status": "ACCEPTED",
+      "canonical": "plans\\step_e_pilot\\e03_20x50_2bhk_no_store.json",
+      "similarity": 0.439,
+      "image": "plans\\step_e_pilot\\preview\\e03_20x50_2bhk_no_store.png",
+      "image_status": "rendered"
+    }
+  ],
+  "catalog_status": "INCOMPLETE",
+  "catalog_accepted_after_pilot": 4,
+  "catalog_shortfall_after_pilot": 296,
+  "production_ready": false,
+  "visual_review": "assistant inspection required"
+}

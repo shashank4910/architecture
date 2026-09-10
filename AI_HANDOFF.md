@@ -434,3 +434,19 @@ PYTHONPATH=src python3 -m unittest tests.test_validator                         
 - **Step E real diversity library.** Genuinely different planning strategies per plot/BHK group; do not relax thresholds to manufacture unique counts. Broaden facings only with real design + tests.
 
 Honest count: 0 proven accepted from solver search so far. The pipeline is fail-closed and reports INCOMPLETE with the exact shortfall; it will not render an incomplete bank.
+
+
+## 14. Step E pilot outcome (2026-09-10)
+
+The continuation completed the bounded Step E pilot without mass-generating the catalogue.
+
+- Fixed only the two failing diversity fixtures in `tests/test_catalog_diversity.py`: explicit semantic roles were added and the distinct fixture now tiles a genuinely different layout. The focused diversity suite passes 10/10.
+- Added three accepted structural seeds to `data/structural_seeds.json`, each with strategy, provenance and assembly-seed metadata, and copied their canonical JSON into `plans/step_e_pilot/`:
+  - E01: 20x50 2BHK with usable store.
+  - E02: 30x40 2BHK with usable store.
+  - E03: 20x50 2BHK without store.
+- Added `scripts/validate_step_e_pilot.py` to validate only this bounded pilot and optionally render it. Validation accepted 3/3 and rejected 0. Each accepted plan passed exact tiling, assembly, catalogue validation, furnishing/store/stair checks and diversity checks.
+- Rendered exactly three new pilot PNGs and inspected each individually. Notes: E01 has a broad 20x4 lobby, E02 a compact 7x7 bath, and E03 compact 6.5x8 kitchen/bath circulation. These are assistant-level observations only; all plans remain conceptual and pending professional review.
+- Final verification: `compileall` passed; the full suite ran 105 tests and passed (`OK`).
+- Known accepted count is now 4/300 including the prior accepted 30x50 4BHK concept. The catalogue remains `INCOMPLETE` with a 296-plan shortfall. No 3BHK seed was accepted in this pilot, and no 300-plan generation was run.
+- Narrow `.gitignore` exceptions track only the pilot canonical JSON and its selected preview assets; temporary debug and validation output must remain untracked.
