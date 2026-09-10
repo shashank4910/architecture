@@ -1,31 +1,43 @@
 # House Plan Generator
 
-A deterministic Python project for generating and validating Indian residential house-plan concepts. The project keeps the canonical geometry and validation logic as the source of truth, then optionally renders 2D and 3D presentation outputs around that geometry.
+A deterministic Python project for generating and validating conceptual Indian residential house-plan catalogues. The **canonical plan JSON is the single source of truth**; the Python renderer and any later AI imagery are presentation layers that must follow the JSON exactly, never the other way around.
+
+The pipeline is **fail-closed**: a plan that fails validation is rejected, never rendered anyway. The catalogue is **not complete or approved** — the bounded solver has not yet produced a proven accepted bank, so the pipeline honestly reports an incomplete status with the exact per-group shortfall.
+
+## Supported scope
+
+Only the following are supported today. Anything else requires real design work and is not faked by mirroring or relabelling:
+
+- **Plot sizes:** 20x50, 30x40, 30x50
+- **BHK:** 2, 3, 4 (per the quota mix in `data/catalog_targets.json`)
+- **Facing:** north only
 
 ## What this project contains
 
-- Canonical plan definitions and layout transforms under `src/house_plan_generator/`
-- Deterministic 2D render pipeline under `src/house_plan_generator/renderer_2d.py`
-- Geometry validation under `src/house_plan_generator/validator.py`
-- Optional 3D renderers and legacy experiment code in `src/house_plan_generator/` and `archive/old_experiments/`
-- Generated output artifacts under `generated/` and `outputs/`
-- Supporting scripts under `scripts/`
+- Canonical validators, diversity checks, bulk pipeline and renderers under `src/house_plan_generator/`
+- The bulk catalogue orchestration: `catalog.py` (`generate_catalog`), `catalog_validation.py` (release gate), `catalog_diversity.py` (duplicate/mirror/near-duplicate/family filters), `catalog_outputs.py` (render gate that re-validates the whole bank before any render)
+- The 2D renderer `renderer_2d.py` and orientation-aware furniture drawing `curated_furniture.py`
+- Tracked curated regression fixtures under `plans/curated/` (C01, C02)
+- Bulk CLI `scripts/generate_300_2d_batch.py`
 - Tests under `tests/`
 
 ## Core architecture
 
-The canonical JSON plan is the single source of truth. Each plan includes plot dimensions, room geometry, doors, windows, stairs, parking, and Vastu guidance metadata. Validation checks ensure:
+The canonical JSON plan is the source of truth. Each plan carries plot dimensions/facing, room geometry, doors, windows, stairs, parking, furniture and relationships. Validation (`validate_catalog_plan`, wrapping `review_concept` plus geometry/BHK/furniture/ventilation/stair checks) enforces at least:
 
-- no room leaves the plot boundary
-- no room overlaps another
-- doors and windows are on valid walls
-- reachable circulation exists
-- staircase and parking remain plausible
+- geometry stays in bounds, no overlaps, space is accounted for
+- room-access topology rooted at the real exterior entrance
+- **no bedroom is ever accessed through another bedroom** — an `ensuite` flag cannot legalize bedroom-to-bedroom access
+- the only private-bathroom exception is a genuine explicit bedroom-to-bathroom ensuite
+- doors on real shared walls with usable width, clear swing and approach
+- role-appropriate furniture that fits with operating/approach clearances
+- genuine diversity: mirrors, renames, timestamps, palette or tiny dimension shifts are rejected
 
-## Quick start
+`validate_catalog_plan` always reports `production_ready=False`, even on PASS. Numerical PASS is not visual or professional approval.
 
-1. Create or update a local `.env` file using `.env.example`.
-2. Install dependencies:
+## Requirements
+
+Local development uses a Windows `.venv` with `Pillow`, `Flask`, `python-dotenv`, `ortools>=9.10,<10` and `numpy` (see `requirements.txt`). The renderer, Flask UI and CP-SAT solver require these packages; only stdlib-based checks (compileall, the validator and orientation tests) run without them.
 
 ```powershell
 python -m venv .venv
@@ -33,82 +45,59 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-3. Run the validation and renderer tests:
+## Commands
+
+All commands are run from the repository root. Set `PYTHONPATH` to `src` first (PowerShell shown; use the equivalent on other shells).
+
+**Compile check:**
 
 ```powershell
-.\.venv\Scripts\python.exe -m unittest -q tests/test_validator.py tests/test_match_validator.py tests/test_renderer.py
+.\.venv\Scripts\python.exe -m compileall -q src scripts app.py
 ```
 
-4. Launch the local browser UI:
+**Run the full test suite:**
 
 ```powershell
-.\.venv\Scripts\python.exe .\app.py
+$env:PYTHONPATH = 'src'
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-Then open:
-
-```text
-http://localhost:5000
-```
-
-Use the form to choose the house size, facing, bedroom count, quantity, and batch name. Click Generate 2D images to create a batch. Every batch is saved in a dedicated subfolder under:
-
-```text
-generated/
-  ui/
-    <batch_name>/
-```
-
-The UI also includes an Open folder button that links directly to the generated image folder for that batch.
-
-5. Generate the canonical plans and deterministic local outputs:
+The stdlib-only subset (no Pillow/OR-Tools/Flask) that runs anywhere:
 
 ```powershell
-.\.venv\Scripts\python.exe -m src.house_plan_generator.generate_local
+$env:PYTHONPATH = 'src'
+python -m unittest tests.test_validator tests.test_renderer_orientation -v
 ```
 
-Or, if you prefer the project root entry point wrapper:
+**Bootstrap the catalogue (JSON search only, no images):**
 
 ```powershell
-.\.venv\Scripts\python.exe .\scripts\generate_300_2d_batch.py
+.\.venv\Scripts\python.exe scripts\generate_300_2d_batch.py --max-attempts 0
 ```
 
-This batch generator writes its outputs to:
+`--max-attempts 0` runs only the authored structural seeds with no solver search. Inspect `generated/catalog_v2/generation_report.json` and `search_state.json` for accepted geometry and the exact per-group shortfall.
 
-```text
-generated/
-  plan_types/
-    30x40/
-    30x50/
-    20x50/
+**Preview a small explicit number of accepted candidates as PNGs:**
+
+```powershell
+.\.venv\Scripts\python.exe scripts\generate_300_2d_batch.py --max-attempts 0 --preview N
 ```
 
-Each size folder contains 100 2D renders, for a total of 300 images in the batch set.
+`--preview N` renders exactly N accepted candidates (a positive count). Then **inspect every PNG produced**, both the contact sheet and full-size, for architectural correctness and readability.
 
-## Important directories
+**Exit codes:** the CLI returns **exit code 2 for INCOMPLETE** — including a successful partial preview when the full bank of 300 is not yet accepted. Exit code 2 is the expected, honest status until the solver produces a complete, reviewed bank; it is not a crash.
 
-- `src/house_plan_generator/` — active production code
-- `scripts/` — small entrypoint scripts
-- `tests/` — project tests
-- `generated/` — recent deterministic outputs
-- `archive/old_experiments/` — historical or experimental scripts that are no longer part of the main pipeline
-- `plans/` — exported canonical plan JSON files
-- `validation/` — validation metadata and geometry checks
+## Status
+
+- The generation pipeline is **fail-closed**: validation failures are never rendered.
+- The catalogue is **not complete and not approved**. The solver has not yet produced a proven accepted bank; the pipeline reports INCOMPLETE with the exact shortfall.
+- Solver yield and architectural diversity are unproven at the target of 300 (100 per plot size).
+- The Flask UI (`app.py`) now serves only a validated persisted bank; it no longer renders unvalidated legacy output.
 
 ## Safety rules
 
-- Do not treat AI outputs as the source of truth.
+- The canonical JSON is the source of truth. AI outputs are never the ground truth for geometry.
 - Do not claim plans are construction-ready or architect-approved.
-- Keep Vastu guidance as conceptual guidance only.
-- Use AI generation only as a presentation layer, never as the canonical geometry.
-
-## Output notes
-
-The project generates:
-
-- 2D concept sheets
-- 3D concept sheets
-- validation reports
-- diversity/contact-sheet summaries
-
-These outputs are reference material, not legal or construction documentation.
+- Vastu guidance is conceptual only.
+- Never commit secrets (`.env*`) or wholesale `generated/`/`work/` caches.
+- North-facing only until real orientation design exists; never mirror or relabel to fake diversity.

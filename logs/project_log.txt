@@ -27,3 +27,22 @@
 - Images are saved under dedicated folders in `generated/ui/<batch_name>/`.
 - Added a folder browser route so the UI can open the active output folder directly.
 - Validation remains on the strict privacy-safe architecture rule.
+
+[2026-09-11 continuation pass] Safe catalogue pipeline + renderer orientation.
+- Scope: finished Steps A-C (safe fail-closed orchestration + focused tests, validated-bank UI with hardened /browse containment) and the Section 9 renderer orientation fixes, plus this documentation pass (Step F).
+- curated_furniture.py: beds now honor head N/W/S/E (double and single) with headboard+pillows drawn strictly inside the authored footprint; sofa cushions run along the long axis for rotated/horizontal sofas; WC honors the stored quarter-turn rotation 0..3 without changing the footprint; shelves get a parallel-line treatment; short rotated counters keep hob/sink symbols inside; stairs support the new orientation/reverse/clear_bounds_ft metadata via a local-coordinate transform while the legacy C01/C02 vertical dogleg fields draw unchanged.
+- New tests/test_renderer_orientation.py uses a recording fake ImageDraw (no PIL import) to assert, on recorded coordinates, that every drawn element stays inside its footprint/clear_bounds and that legacy vs oriented stairs differ. C01/C02 were NOT rerendered; regression is numeric/mock.
+- In-sandbox verification (INTEGRATIONS_ONLY, PyPI blocked, no Pillow/numpy/ortools/Flask):
+    PYTHONPATH=src python3 -m compileall -q src/house_plan_generator/curated_furniture.py  -> clean
+    PYTHONPATH=src python3 -m unittest tests.test_renderer_orientation -v  -> 17 tests OK
+    PYTHONPATH=src python3 -m unittest tests.test_validator  -> 14 tests OK
+  Everything that imports Pillow/OR-Tools/Flask/numpy cannot run here and must be run locally.
+- Local commands the user must run (PowerShell, repo root):
+    .venv\Scripts\python.exe -m compileall -q src scripts app.py
+    $env:PYTHONPATH='src'
+    .venv\Scripts\python.exe -m unittest discover -s tests -v   (report the full pass/fail line)
+    .venv\Scripts\python.exe scripts\generate_300_2d_batch.py --max-attempts 0            (bootstrap JSON search)
+    .venv\Scripts\python.exe scripts\generate_300_2d_batch.py --max-attempts 0 --preview N (render N accepted; inspect EVERY PNG)
+  Exit code 2 = INCOMPLETE (expected until a full reviewed bank exists), not a crash.
+- Honest accepted-vs-300 count: the solver has produced NO proven accepted catalogue yet (0 confirmed accepted from solver search in this sandbox). The pipeline is fail-closed and reports INCOMPLETE with the exact per-group shortfall; it will not render an incomplete bank.
+- Next work: Step D bounded solver pilot (local, .venv) + preview inspection of every PNG, and Step E real diversity library of genuinely different planning strategies. Broaden facings only with real design + tests.
