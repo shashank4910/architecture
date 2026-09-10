@@ -1,0 +1,366 @@
+[
+  {
+    "width": 30,
+    "depth": 50,
+    "bedrooms": 4,
+    "store": false,
+    "raw": {
+      "status": "AUTHORED_SEED",
+      "entry": "living",
+      "combined_living_dining": true,
+      "rooms": {
+        "parking": [
+          0,
+          0,
+          9,
+          16
+        ],
+        "living": [
+          9,
+          0,
+          21,
+          16
+        ],
+        "staircase": [
+          0,
+          16,
+          8,
+          13
+        ],
+        "hall": [
+          8,
+          16,
+          7,
+          13
+        ],
+        "hall2": [
+          11,
+          29,
+          4,
+          21
+        ],
+        "kitchen": [
+          23,
+          16,
+          7,
+          13
+        ],
+        "bath1": [
+          15,
+          16,
+          8,
+          7
+        ],
+        "bath2": [
+          15,
+          23,
+          8,
+          6
+        ],
+        "master": [
+          0,
+          39,
+          11,
+          11
+        ],
+        "bed2": [
+          0,
+          29,
+          11,
+          10
+        ],
+        "bed3": [
+          15,
+          29,
+          15,
+          11
+        ],
+        "bed4": [
+          15,
+          40,
+          15,
+          10
+        ]
+      }
+    }
+  },
+  {
+    "width": 30,
+    "depth": 50,
+    "bedrooms": 4,
+    "store": true,
+    "raw": {
+      "status": "AUTHORED_SEED",
+      "entry": "living",
+      "combined_living_dining": true,
+      "rooms": {
+        "parking": [
+          0,
+          0,
+          9,
+          16
+        ],
+        "living": [
+          9,
+          0,
+          21,
+          16
+        ],
+        "staircase": [
+          0,
+          16,
+          8,
+          13
+        ],
+        "hall": [
+          8,
+          16,
+          7,
+          13
+        ],
+        "hall2": [
+          11,
+          29,
+          4,
+          21
+        ],
+        "kitchen": [
+          23,
+          16,
+          7,
+          13
+        ],
+        "bath1": [
+          15,
+          16,
+          8,
+          7
+        ],
+        "bath2": [
+          15,
+          23,
+          8,
+          6
+        ],
+        "master": [
+          0,
+          39,
+          11,
+          11
+        ],
+        "bed2": [
+          0,
+          29,
+          11,
+          10
+        ],
+        "bed3": [
+          21,
+          29,
+          9,
+          11
+        ],
+        "bed4": [
+          15,
+          40,
+          15,
+          10
+        ],
+        "store": [
+          15,
+          33,
+          6,
+          7
+        ],
+        "hall3": [
+          15,
+          29,
+          6,
+          4
+        ]
+      }
+    }
+  },
+  {
+    "width": 30,
+    "depth": 50,
+    "bedrooms": 3,
+    "store": false,
+    "raw": {
+      "status": "AUTHORED_SEED",
+      "entry": "living",
+      "combined_living_dining": false,
+      "rooms": {
+        "parking": [
+          0,
+          0,
+          9,
+          16
+        ],
+        "living": [
+          9,
+          0,
+          21,
+          16
+        ],
+        "staircase": [
+          0,
+          16,
+          8,
+          13
+        ],
+        "hall": [
+          8,
+          16,
+          7,
+          13
+        ],
+        "hall2": [
+          11,
+          29,
+          4,
+          21
+        ],
+        "kitchen": [
+          23,
+          16,
+          7,
+          13
+        ],
+        "bath1": [
+          15,
+          16,
+          8,
+          7
+        ],
+        "bath2": [
+          15,
+          23,
+          8,
+          6
+        ],
+        "master": [
+          0,
+          39,
+          11,
+          11
+        ],
+        "dining": [
+          0,
+          29,
+          11,
+          10
+        ],
+        "bed2": [
+          15,
+          29,
+          15,
+          11
+        ],
+        "bed3": [
+          15,
+          40,
+          15,
+          10
+        ]
+      }
+    }
+  },
+  {
+    "width": 30,
+    "depth": 50,
+    "bedrooms": 3,
+    "store": true,
+    "raw": {
+      "status": "AUTHORED_SEED",
+      "entry": "living",
+      "combined_living_dining": false,
+      "rooms": {
+        "parking": [
+          0,
+          0,
+          9,
+          16
+        ],
+        "living": [
+          9,
+          0,
+          21,
+          16
+        ],
+        "staircase": [
+          0,
+          16,
+          8,
+          13
+        ],
+        "hall": [
+          8,
+          16,
+          7,
+          13
+        ],
+        "hall2": [
+          11,
+          29,
+          4,
+          21
+        ],
+        "kitchen": [
+          23,
+          16,
+          7,
+          13
+        ],
+        "bath1": [
+          15,
+          16,
+          8,
+          7
+        ],
+        "bath2": [
+          15,
+          23,
+          8,
+          6
+        ],
+        "master": [
+          0,
+          39,
+          11,
+          11
+        ],
+        "dining": [
+          0,
+          29,
+          11,
+          10
+        ],
+        "bed2": [
+          21,
+          29,
+          9,
+          11
+        ],
+        "bed3": [
+          15,
+          40,
+          15,
+          10
+        ],
+        "store": [
+          15,
+          33,
+          6,
+          7
+        ],
+        "hall3": [
+          15,
+          29,
+          6,
+          4
+        ]
+      }
+    }
+  }
+]

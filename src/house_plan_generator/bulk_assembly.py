@@ -75,6 +75,9 @@ def assemble_layout(raw,width,depth,beds,with_store,seed):
   kind='habitable' if role in ('bedroom','living','dining') else role
   name=('Master Bedroom' if rid=='master' else f"Bedroom {rid[3:]}" if role=='bedroom' else 'Common Bath' if role=='bathroom' else 'Lobby' if role=='circulation' else 'Terrace Stair' if role=='staircase' else 'Car Porch' if role=='parking' else role.title())
   rooms.append(dict(id=rid,name=name,kind=kind,role=role,x_ft=x,y_ft=y,width_ft=w,depth_ft=d))
+ if raw.get('combined_living_dining'):
+  for r in rooms:
+   if r['id']=='living':r.update(name='Living Dining',combined_living_dining=True)
  by={r['id']:r for r in rooms};common=[r['id'] for r in rooms if r['role'] in ('living','dining','circulation')]
  edges=[(a,b) for a,b in combinations(common,2) if list(door_choices(by[a],by[b],{'plot':{'width_ft':width,'depth_ft':depth}},kind='open'))]
  trees=[tree for tree in combinations(edges,len(common)-1) if _tree(tree,common)]
@@ -83,10 +86,11 @@ def assemble_layout(raw,width,depth,beds,with_store,seed):
  base=dict(design_id=f'candidate_{seed}',plot=dict(width_ft=width,depth_ft=depth,facing='north'),floors=1,bedrooms=beds,bathrooms=sum(r['role']=='bathroom' for r in rooms),rooms=rooms,door_offset_convention='start',walls=dict(external_reserve_ft=.75,internal_half_ft=.25),assumptions=[
  'North-facing conceptual full-plot planning envelope. Statutory setbacks have not been deducted.',
  'Side/rear windows assume legally available open air; party-wall sites require redesign.',
+ 'Interior bathrooms require a designed mechanical exhaust route to the roof; daylight and ventilation remain site-review items.',
  'Wall allowances: 9 in at plot edge, 3 in each side of internal centerlines; printed dimensions are planning cells.',
  'Stair assumes 9 ft floor height, 16 risers and 10 in goings; headroom, structure and upper arrival need local review.',
  'Southwest master and east kitchen are selected Vastu preferences, not a guarantee of full compliance.',
- 'Double beds are 5 x 6.5 ft; minimum declared bedside space is 1.5 ft. These are compact concept design targets.',
+ 'Master bed is 5 x 6.5 ft; secondary rooms may use a 3.5 x 6.5 ft single where a double does not fit. Minimum declared bedside space is 1.5 ft.',
  'Automated checks and contact-sheet review do not constitute professional architectural or code approval.'
  ],dimension_note='ROOM SIZES: PLANNING CELLS; CLEAR SIZES ALLOW FOR WALLS',disclaimer='CONCEPT ONLY. Setbacks, ventilation rights, structural design and stair headroom require local review.')
  failure='furniture'
@@ -127,7 +131,10 @@ def assemble_layout(raw,width,depth,beds,with_store,seed):
   if not ok:continue
   pb=clear_bounds(park,p);attach_items(p,[item(park,'car',pb[0]+.1,pb[1]+1,5.8,12)],[])
   p['parking']=[dict(id='car_1',room_id='parking',width_ft=park['width_ft'],depth_ft=park['depth_ft'])]
-  add_windows(p);labels(p)
+  add_windows(p)
+  for r in p['rooms']:
+   if r['role']=='bathroom' and not any(w['room_id']==r['id'] for w in p['windows']):r['ventilation']='mechanical_exhaust_to_roof_required'
+  labels(p)
   result=review_concept(p)
   if result['errors']:return None,'validation:'+result['errors'][0]
   if bool(any(r['role']=='store' for r in rooms))!=with_store:return None,'store_mismatch'

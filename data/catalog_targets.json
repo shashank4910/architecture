@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "total": 300,
+  "store_total": 39,
+  "facing": "north",
+  "near_duplicate_threshold": 0.88,
+  "max_per_layout_family": 8,
+  "groups": [
+    {"width":20,"depth":50,"bedrooms":2,"store":false,"count":51},
+    {"width":20,"depth":50,"bedrooms":2,"store":true,"count":9},
+    {"width":20,"depth":50,"bedrooms":3,"store":false,"count":40},
+    {"width":30,"depth":40,"bedrooms":2,"store":false,"count":35},
+    {"width":30,"depth":40,"bedrooms":2,"store":true,"count":5},
+    {"width":30,"depth":40,"bedrooms":3,"store":false,"count":50},
+    {"width":30,"depth":40,"bedrooms":3,"store":true,"count":10},
+    {"width":30,"depth":50,"bedrooms":3,"store":false,"count":55},
+    {"width":30,"depth":50,"bedrooms":3,"store":true,"count":10},
+    {"width":30,"depth":50,"bedrooms":4,"store":false,"count":30},
+    {"width":30,"depth":50,"bedrooms":4,"store":true,"count":5}
+  ]
+}

@@ -34,7 +34,7 @@ def door_choices(r,target,p,width=3,kind='swing'):
   axis=0 if side in ('north','south') else 1
   lo=max(rb[axis],tb[axis]);hi=min(rb[axis+2],tb[axis+2]);origin=r['x_ft'] if axis==0 else r['y_ft']
   if hi-lo+1e-6<width:continue
-  for start in dict.fromkeys((lo,hi-width,(lo+hi-width)/2)):
+  for start in dict.fromkeys((lo,hi-width,(lo+hi-width)/2,*[lo+.25*n for n in range(int((hi-lo-width)/.25)+1)])):
    for hinge in ('start','end') if kind=='swing' else ('start',):
     yield dict(id='',room_id=r['id'],side=side,offset_ft=round(start-origin,4),width_ft=width,connects_to=target['id'],opening_type=kind,hinge=hinge)
 
@@ -60,20 +60,20 @@ def valid_furniture(r,p,fs,cs,avoid_doors=True):
   if d['room_id']==r['id'] and d.get('opening_type')=='swing':zones.append(door_swing(r,d,p)['bounds_ft'])
  return not any(overlap(_rect(f),z) for f in fs for z in zones)
 
-def bedroom(r,p):
+def _bedroom_width(r,p,bed_width):
  x,y,x2,y2=clear_bounds(r,p);w,d=x2-x,y2-y
  beds=[]
  for head in ('south','north','west','east'):
   if head in ('south','north'):
-   if w<8 or d<9.5:continue
-   bx=x+(w-5)/2;by=y2-6.5 if head=='south' else y
-   bed=item(r,'bed',bx,by,5,6.5,head=head)
-   cs=[clearance(r,'bedside',bx-1.5,by,1.5,6.5),clearance(r,'bedside',bx+5,by,1.5,6.5),clearance(r,'bedfoot',bx,by-2.5 if head=='south' else by+6.5,5,2.5)]
+   if w<bed_width+3 or d<9.5:continue
+   bx=x+(w-bed_width)/2;by=y2-6.5 if head=='south' else y
+   bed=item(r,'bed',bx,by,bed_width,6.5,head=head)
+   cs=[clearance(r,'bedside',bx-1.5,by,1.5,6.5),clearance(r,'bedside',bx+bed_width,by,1.5,6.5),clearance(r,'bedfoot',bx,by-2.5 if head=='south' else by+6.5,bed_width,2.5)]
   else:
-   if d<8 or w<9.5:continue
-   bx=x if head=='west' else x2-6.5;by=y+(d-5)/2
-   bed=item(r,'bed',bx,by,6.5,5,head=head)
-   cs=[clearance(r,'bedside',bx,by-1.5,6.5,1.5),clearance(r,'bedside',bx,by+5,6.5,1.5),clearance(r,'bedfoot',bx+6.5 if head=='west' else bx-2.5,by,2.5,5)]
+   if d<bed_width+3 or w<9.5:continue
+   bx=x if head=='west' else x2-6.5;by=y+(d-bed_width)/2
+   bed=item(r,'bed',bx,by,6.5,bed_width,head=head)
+   cs=[clearance(r,'bedside',bx,by-1.5,6.5,1.5),clearance(r,'bedside',bx,by+bed_width,6.5,1.5),clearance(r,'bedfoot',bx+6.5 if head=='west' else bx-2.5,by,2.5,bed_width)]
   for length in (5,4,3):
    wards=[]
    for wx in (x,x2-length):
@@ -84,17 +84,25 @@ def bedroom(r,p):
     if valid_furniture(r,p,[bed,ward],cs+[use]):return [bed,ward],cs+[use]
  return None
 
+def bedroom(r,p):
+ for width in ((5,) if r['id']=='master' else (5,3.5)):
+  result=_bedroom_width(r,p,width)
+  if result:return result
+ return None
+
 def bathroom(r,p):
- x,y,x2,y2=clear_bounds(r,p)
- for sx in (x,x2-3):
-  shower=item(r,'shower',sx,y2-3,3,3)
-  shower_use=clearance(r,'shower_approach',sx,y2-5,3,2)
-  for wx in (x+.2,x2-1.8):
-   wc=item(r,'wc',wx,y,1.6,2.4);wcuse=clearance(r,'wc_front',wx,y+2.4,1.6,2)
-   for bx,by in ((x,y),(x2-1.6,y),(x,y+2.6),(x2-1.6,y+2.6)):
-    sink=item(r,'sink',bx,by,1.6,1.4);sinkuse=clearance(r,'basin_front',bx,by+1.4,1.6,1.5)
-    fs=[shower,wc,sink];cs=[shower_use,wcuse,sinkuse]
-    if valid_furniture(r,p,fs,cs,avoid_doors=False):return fs,cs
+ x,y,x2,y2=clear_bounds(r,p);W,D=x2-x,y2-y
+ for rot in range(4):
+  w,d=(W,D) if rot%2==0 else (D,W)
+  for sx in (0,w-3):
+   shower=item(r,'shower',sx,d-3,3,3)
+   shower_use=clearance(r,'shower_approach',sx,d-5,3,2)
+   for wx in (.2,w-1.8):
+    wc=item(r,'wc',wx,0,1.6,2.4,rotation=rot);wcuse=clearance(r,'wc_front',wx,2.4,1.6,2)
+    for bx,by in ((0,0),(w-1.6,0),(0,2.6),(w-1.6,2.6)):
+     sink=item(r,'sink',bx,by,1.6,1.4);sinkuse=clearance(r,'basin_front',bx,by+1.4,1.6,1.5)
+     fs,cs=rotate_items([shower,wc,sink],[shower_use,wcuse,sinkuse],x,y,W,D,rot)
+     if valid_furniture(r,p,fs,cs,avoid_doors=False):return fs,cs
  return None
 
 def rotate_items(fs,cs,x,y,w,d,quarter):
@@ -131,6 +139,21 @@ def living(r,p):
   for fraction in (.5,.25,.75):
    sy=max(0,min(d-6.2,(d-6.2)*fraction))
    fs=[item(r,'sofa',0,sy,2.8,6.2),item(r,'table',4.3,sy+1.6,1.5,3),item(r,'tv',w-.5,sy+1.1,.5,4)]
+   fs,cs=rotate_items(fs,[],x,y,W,D,rot)
+   if valid_furniture(r,p,fs,cs):return fs,cs
+ return None
+
+def living_dining(r,p):
+ x,y,x2,y2=clear_bounds(r,p);W,D=x2-x,y2-y
+ for rot in range(4):
+  w,d=(W,D) if rot%2==0 else (D,W)
+  if w<8.5 or d<14.5:continue
+  for tx in (.5,(w-3.5)/2,w-4):
+   fs=[item(r,'sofa',0,.3,2.8,6.2),item(r,'table',4.3,1.9,1.5,3),item(r,'tv',w-.5,2.6,.5,4)]
+   ty=d-4.45
+   fs.append(item(r,'table',tx,ty,3.5,2.5))
+   for cx in (tx+.15,tx+2.1):
+    for cy in (ty-1.45,ty+2.7):fs.append(item(r,'chair',cx,cy,1.25,1.25))
    fs,cs=rotate_items(fs,[],x,y,W,D,rot)
    if valid_furniture(r,p,fs,cs):return fs,cs
  return None
@@ -181,7 +204,7 @@ def staircase(r,p):
 FUNCTIONS={'kitchen':kitchen,'living':living,'dining':dining,'bathroom':bathroom,'store':store_room,'bedroom':bedroom}
 
 def furnish(r,p):
- return FUNCTIONS[r['role']](r,p)
+ return living_dining(r,p) if r.get('combined_living_dining') else FUNCTIONS[r['role']](r,p)
 
 def walkable(r,p,fs):
  """Conservative 2.5-ft square-person grid, joining all door approaches in shared rooms."""
