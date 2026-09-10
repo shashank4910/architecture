@@ -3,26 +3,76 @@ import hashlib
 import html
 import json
 from pathlib import Path
-from PIL import Image, ImageDraw
 from .catalog_diversity import DiversityIndex, geometry_key
 from .catalog_validation import validate_catalog_plan
-from .renderer_2d import render_2d
 
 
-def render_catalog(root, catalog, *, preview=None):
+def _load_pillow():
+    # Pillow is only needed once a real render is attempted; keep import lazy so
+    # the bank-validation / quota / cache logic can be unit-tested without it.
+    from PIL import Image, ImageDraw
+    return Image, ImageDraw
+
+
+def _load_renderer():
+    from .renderer_2d import render_2d
+    return render_2d
+
+
+def verify_group_quotas(plans, config_path=None):
+    """Independently re-derive per-group counts from catalog_targets.json.
+
+    Never trusts summary['accepted']; returns the list of groups whose accepted
+    count does not exactly equal the configured quota.
+    """
+    from .catalog import read_config, group_key, spec_key, DEFAULT_TARGETS
+    cfg = read_config(config_path or DEFAULT_TARGETS)
+    counts = {}
+    for plan in plans:
+        counts[group_key(plan)] = counts.get(group_key(plan), 0) + 1
+    mismatched = []
+    for g in cfg['groups']:
+        key = (g['width'], g['depth'], g['bedrooms'], g['store'])
+        accepted = counts.get(key, 0)
+        if accepted != g['count']:
+            mismatched.append(dict(group=key, accepted=accepted, quota=g['count']))
+    return mismatched
+
+
+def render_catalog(root, catalog, *, preview=None, config_path=None):
     root = Path(root)
     plans, summary = catalog['plans'], catalog['summary']
-    if preview is None and len(plans) != summary['requested']:
-        raise ValueError('Incomplete catalogue: request an explicit preview count')
-    if preview is not None and (not isinstance(preview, int) or preview < 1):
+    if preview is not None and (not isinstance(preview, int) or isinstance(preview, bool) or preview < 1):
         raise ValueError('Preview count must be positive')
+    if preview is None:
+        # A full render is refused for any incomplete / wrong-quota bank BEFORE
+        # the renderer is touched. Quotas are re-verified from config, not trusted.
+        if len(plans) != summary['requested']:
+            raise ValueError('Incomplete catalogue: request an explicit preview count')
+        mismatched = verify_group_quotas(plans, config_path)
+        if mismatched:
+            raise ValueError(f'Refusing full render: per-group quota mismatch {mismatched}')
     index = DiversityIndex(summary.get('near_duplicate_threshold', .88), summary.get('max_per_layout_family', 8))
     for plan in plans:
         result = validate_catalog_plan(plan)
         if result['overall'] != 'PASS':
             raise ValueError(f"Invalid candidate: {result['errors']}")
+        # Fail-closed diversity guarantee, made explicit and symmetric with
+        # app.select_validated: check the bank BEFORE add() so a near-duplicate
+        # or family-limit violation that reached the persisted bank by any path
+        # other than live generation is refused with a legible diagnostic rather
+        # than silently rendered. A full render must represent the exact bank,
+        # so we raise (do not drop-and-continue).
+        reason, _ = index.check(plan)
+        if reason:
+            raise ValueError(
+                f"Refusing render: near-duplicate/family-limit in bank "
+                f"({reason}) for design {plan.get('design_id')}"
+            )
         index.add(plan)
     selected = plans if preview is None else plans[:preview]
+    render_2d = _load_renderer()
+    Image, ImageDraw = _load_pillow()
     out = root / 'review'
     out.mkdir(parents=True, exist_ok=True)
     renderer_hash = hashlib.sha256(b''.join((Path(__file__).parent / n).read_bytes() for n in ('renderer_2d.py', 'curated_furniture.py', 'openings.py'))).hexdigest()

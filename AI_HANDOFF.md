@@ -403,3 +403,34 @@ Observed modifications before writing this handoff:
 This document is also new/uncommitted. Earlier changes appear to have been committed into local1ac7e18 while the expensive agent was interrupted. Do not attribute or undo that commit. Remote synchronization remains unverified.
 
 **First concrete next action when continuation is authorized: compile the latest files, run existing tests, then repair the renderer orientation support and safe-bank UI before any preview generation.**
+
+## 13. Continuation outcome (2026-09-11 pass)
+
+This section is appended; sections 1-12 above are the original handoff and remain accurate as the record of the stopped turn. The status is no longer "pending": the continuation described below has been implemented and committed.
+
+### Delivered this pass
+
+- **Hardened fail-closed orchestration + render gate (Steps A-B).** `catalog.py` bounded/resumable generation, `catalog_validation.py` release gate (always `production_ready=False`), `catalog_diversity.py` mirror/near-duplicate/family filters, and `catalog_outputs.py` re-validating the whole bank before any render. Focused tests cover config quotas, mirror/rename/near-duplicate rejection, bedroom-through-bedroom and common-bath-through-bedroom rejection even with misleading metadata, door/swing/approach collisions, store-label-vs-real-shelving, malformed geometry, bounded underfill -> INCOMPLETE with shortfall, and the render gate refusing incomplete/wrong-quota banks.
+- **Safe UI (Step C).** Root `app.py` no longer calls the legacy unsafe `make_plan` flow for bulk output; it serves only a validated persisted bank, filters supported plot/BHK/north facing, checks requested quantity before rendering, shows every requested image (no `generated[:6]`), and `/browse` now uses resolved-path containment instead of `startswith`.
+- **Renderer orientation support (Section 9).** `curated_furniture.py` now faithfully draws the orientation metadata `bulk_furnishing.py` emits, without ever changing an authored footprint: bed heads N/W/S/E for double and single beds; sofa cushions along the long axis; WC quarter-turn `rotation` 0..3; a shelf treatment for `shelves`; hob/sink kept inside short rotated counters; and stairs drawn via a local-coordinate transform for `orientation`/`reverse`/`clear_bounds_ft` while the legacy C01/C02 vertical dogleg fields still draw unchanged.
+- **Focused tests.** `tests/test_renderer_orientation.py` uses a recording fake ImageDraw (no PIL import) and asserts, on recorded coordinates, that bed head lines/pillows, sofa cushions, WC treatment (differs across 0..3 but stays in footprint), shelf lines and counter symbols stay inside their footprints, that a horizontal+reverse stair stays inside `clear_bounds_ft`, and that a legacy vertical stair still draws its flights. C01/C02 were NOT rerendered.
+- **Docs/log (Step F).** README and PROJECT_CONTEXT rewritten around canonical-JSON + validated-bank workflow, north-only scope, real commands (compileall; `unittest discover`; `generate_300_2d_batch.py --max-attempts 0` bootstrap and `--preview N`, exit code 2 = INCOMPLETE) and honest incomplete status. This log/handoff appended, not rewritten.
+
+### In-sandbox verification (INTEGRATIONS_ONLY, PyPI blocked)
+
+Pillow/numpy/OR-Tools/Flask cannot import here, so only pure-Python checks ran:
+
+```
+PYTHONPATH=src python3 -m compileall -q src/house_plan_generator/curated_furniture.py   # clean
+PYTHONPATH=src python3 -m unittest tests.test_renderer_orientation -v                    # 17 OK
+PYTHONPATH=src python3 -m unittest tests.test_validator                                  # 14 OK
+```
+
+### What remains (still open)
+
+- **Local full-suite run.** Run `.venv\Scripts\python.exe -m unittest discover -s tests -v` and record the actual pass/fail line (the sandbox cannot import PIL/OR-Tools/Flask/numpy).
+- **Step D bounded solver pilot (local).** Bootstrap `--max-attempts 0`, then one modest bounded solver pilot; record yield/failures. The solver has produced no proven accepted catalogue yet.
+- **Image preview + inspection (local).** After the renderer fixes, `--max-attempts 0 --preview N` for 3-6 accepted candidates and inspect EVERY PNG (contact sheet + full size); record assistant inspection separately from professional approval.
+- **Step E real diversity library.** Genuinely different planning strategies per plot/BHK group; do not relax thresholds to manufacture unique counts. Broaden facings only with real design + tests.
+
+Honest count: 0 proven accepted from solver search so far. The pipeline is fail-closed and reports INCOMPLETE with the exact shortfall; it will not render an incomplete bank.
