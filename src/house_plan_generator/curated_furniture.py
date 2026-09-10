@@ -129,9 +129,23 @@ def _draw_oriented_stair(st,line,rect_ft):
     reverse=bool(st.get('reverse'))
     going=st['going_ft']; fw=st['flight_width_ft']; landing=st.get('landing_ft',3)
     steps=st['riser_count']//2
-    run=(steps-1)*going
     # Local frame: u = distance along the run direction; v = across-width.
     span_u=(bx2-bx) if horizontal else (by2-by)
+    # Fail-closed footprint guard: the flights start at u=landing and extend
+    # run=(steps-1)*going, so landing+run must never exceed span_u or treads,
+    # rails, arrows and the landing would draw past the authored clear_bounds_ft.
+    # If a solver-emitted region is too small, clamp landing and the going
+    # (tread depth) to fit exactly so every primitive stays strictly inside the
+    # bounds rather than escaping them.
+    n_gaps=max(steps-1,0)
+    if landing+n_gaps*going>span_u:
+        # Give the landing at most half the span, then fit the run in the rest.
+        landing=min(landing,span_u/2)
+        if n_gaps>0:
+            going=max(0.0,(span_u-landing)/n_gaps)
+        else:
+            landing=min(landing,span_u)
+    run=n_gaps*going
 
     def to_plan(u,v):
         # u measured from the near bound into the flights; reverse flips the run direction.

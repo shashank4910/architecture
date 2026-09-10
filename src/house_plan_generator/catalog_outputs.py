@@ -57,6 +57,18 @@ def render_catalog(root, catalog, *, preview=None, config_path=None):
         result = validate_catalog_plan(plan)
         if result['overall'] != 'PASS':
             raise ValueError(f"Invalid candidate: {result['errors']}")
+        # Fail-closed diversity guarantee, made explicit and symmetric with
+        # app.select_validated: check the bank BEFORE add() so a near-duplicate
+        # or family-limit violation that reached the persisted bank by any path
+        # other than live generation is refused with a legible diagnostic rather
+        # than silently rendered. A full render must represent the exact bank,
+        # so we raise (do not drop-and-continue).
+        reason, _ = index.check(plan)
+        if reason:
+            raise ValueError(
+                f"Refusing render: near-duplicate/family-limit in bank "
+                f"({reason}) for design {plan.get('design_id')}"
+            )
         index.add(plan)
     selected = plans if preview is None else plans[:preview]
     render_2d = _load_renderer()

@@ -226,6 +226,40 @@ class RenderGateTests(unittest.TestCase):
                     CO.render_catalog(tmp, {'plans': plans, 'summary': {'requested': 1}}, preview=1)
             render.assert_not_called()
 
+    def test_full_render_refused_on_near_duplicate_in_bank_before_renderer(self):
+        # A near-duplicate reached the persisted bank by some path other than live
+        # generation. The full-render gate must re-check diversity and refuse
+        # (fail-closed) BEFORE the renderer is imported, matching select_validated.
+        render = MagicMock()
+
+        class NearDuplicateIndex(FakeIndex):
+            def check(self, plan):
+                return 'near_duplicate', 0.99
+
+            def add(self, plan):
+                raise AssertionError('add must not be reached when check reports a duplicate')
+
+        # A single-plan bank matching the tiny config's first group exactly, so
+        # the incomplete/quota gates pass and only the diversity check can refuse.
+        cfg_single = {
+            'version': 2, 'total': 1, 'store_total': 0, 'facing': 'north',
+            'near_duplicate_threshold': 0.88, 'max_per_layout_family': 8,
+            'groups': [{'width': 20, 'depth': 50, 'bedrooms': 2, 'store': False, 'count': 1}],
+        }
+        plans = [make_plan(20, 50, 2)]
+        summary = {'requested': 1, 'near_duplicate_threshold': 0.88, 'max_per_layout_family': 8}
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg_path = Path(tmp) / 'single.json'
+            cfg_path.write_text(json.dumps(cfg_single))
+            with patch.object(CO, '_load_renderer', return_value=render), \
+                 patch.object(CO, '_load_pillow', return_value=(MagicMock(), MagicMock())), \
+                 patch.object(CO, 'validate_catalog_plan', side_effect=passing_validation), \
+                 patch.object(CO, 'DiversityIndex', NearDuplicateIndex):
+                with self.assertRaises(ValueError) as ctx:
+                    CO.render_catalog(tmp, {'plans': plans, 'summary': summary}, preview=None, config_path=cfg_path)
+            self.assertIn('Refusing render', str(ctx.exception))
+            render.assert_not_called()
+
     def test_generate_and_write_refuses_incomplete_before_renderer(self):
         render = MagicMock()
         with tempfile.TemporaryDirectory() as tmp:

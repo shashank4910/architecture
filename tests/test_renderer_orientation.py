@@ -258,6 +258,43 @@ class StairTests(unittest.TestCase):
         # And it must not draw the oriented landing rectangle.
         self.assertEqual(draw.rectangles, [], 'legacy stair should not draw an oriented landing box')
 
+    def test_undersized_clear_bounds_clamps_and_nothing_escapes(self):
+        # A deliberately undersized clear region: landing(3) + run for 8 gaps at
+        # going 10/12 would need 3 + 8*0.833 = ~9.67 ft along the run axis, but the
+        # region only spans 5 ft. Every primitive must still stay strictly inside
+        # clear_bounds_ft thanks to the fail-closed clamp.
+        stair = dict(layout='dogleg', orientation='horizontal', reverse=False,
+                     riser_count=16, going_ft=10 / 12, flight_width_ft=2, landing_ft=3,
+                     clear_bounds_ft=[4, 8, 9, 12])
+        draw = run([], stairs=[stair])
+        bounds = (4 * SCALE, 8 * SCALE, 9 * SCALE, 12 * SCALE)
+        self.assertTrue(draw.lines, 'clamped stair should still draw treads/rails/arrows')
+        for pts in draw.lines:
+            self.assertTrue(points_within(pts, bounds),
+                            f'clamped stair line {pts} escaped clear bounds {bounds}')
+        self.assertTrue(draw.rectangles, 'clamped stair should still draw a landing rectangle')
+        for r in draw.rectangles:
+            self.assertTrue(within(r, bounds), f'clamped landing {r} escaped clear bounds {bounds}')
+
+    def test_undersized_clear_bounds_reverse_and_vertical(self):
+        # Same undersized-region guarantee for reverse and vertical orientations.
+        for orient, reverse, cb in (
+            ('horizontal', True, [4, 8, 9, 12]),
+            ('vertical', True, [2, 2, 5, 7]),
+            ('vertical', False, [2, 2, 5, 7]),
+        ):
+            stair = dict(layout='dogleg', orientation=orient, reverse=reverse,
+                         riser_count=16, going_ft=10 / 12, flight_width_ft=1.5, landing_ft=3,
+                         clear_bounds_ft=cb)
+            draw = run([], stairs=[stair])
+            bounds = (cb[0] * SCALE, cb[1] * SCALE, cb[2] * SCALE, cb[3] * SCALE)
+            for pts in draw.lines:
+                self.assertTrue(points_within(pts, bounds),
+                                f'{orient} reverse={reverse} line {pts} escaped {bounds}')
+            for r in draw.rectangles:
+                self.assertTrue(within(r, bounds),
+                                f'{orient} reverse={reverse} landing {r} escaped {bounds}')
+
     def test_legacy_and_oriented_stairs_differ(self):
         legacy = run([], stairs=[dict(layout='dogleg', riser_count=16, going_ft=0.8333,
                                       flight_width_ft=3, flight_x_ft=[0.75, 4.5], flight_y_ft=19.5)])

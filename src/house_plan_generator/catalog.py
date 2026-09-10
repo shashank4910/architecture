@@ -73,6 +73,12 @@ def generate_catalog(requested=300,*,root=None,max_attempts=120,seconds=8,worker
   content_hash=_content_hash(p)
   # Preserve review evidence when canonical content is unchanged; invalidate only
   # when content or the renderer source changes.
+  # Fail-closed on purpose: a plan that carries a `review` block but has NO stored
+  # content_hash/renderer_hash (e.g. a file predating this scheme, or a review
+  # annotated out-of-band) cannot have its approval verified against the current
+  # geometry + renderer, so prior_review resolves to None and the plan reverts to
+  # awaiting_visual_review on resume. Dropping an unverifiable/stale approval is
+  # the safe direction; a human re-review re-establishes it with matching hashes.
   prior_review=p.get('review') if p.get('content_hash')==content_hash and p.get('renderer_hash')==renderer_hash else None
   p['design_id']=design_id
   p['layout_family']=family_key(p);p['layout_strategy']=f"{key[2]} BHK / {'combined living-dining' if any(r.get('combined_living_dining') for r in p['rooms']) else 'separate living and dining'} / {'with usable store' if key[3] else 'no store'}"
