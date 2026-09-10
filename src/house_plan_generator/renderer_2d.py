@@ -4,6 +4,8 @@ import json
 import textwrap
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
+from .openings import door_interval, door_swing
+from .curated_furniture import draw_curated_furniture
 
 
 def _font(size, bold=False):
@@ -131,8 +133,11 @@ def render_2d(plan, output_path, geometry_path=None):
     draw.rectangle((px1, py1, px2, py2), fill=VOID)
     step = 9
     span = int(depth * scale)
-    for i in range(-span, width * scale + step, step):
-        draw.line((px1 + i, py2, px1 + i + span, py1), fill=HATCH, width=1)
+    hatch = Image.new("RGB", (int(width * scale), int(depth * scale)), VOID)
+    hd = ImageDraw.Draw(hatch)
+    for i in range(-span, int(width * scale + step), step):
+        hd.line((i, span, i + span, 0), fill=HATCH, width=1)
+    image.paste(hatch, (int(px1), int(py1)))
 
     # ---------- room fills ----------
     by_id = {r["id"]: r for r in plan["rooms"]}
@@ -182,8 +187,8 @@ def render_2d(plan, output_path, geometry_path=None):
     for dr in plan["doors"]:
         droom = by_id[dr["room_id"]]
         dlen = _side_geom(droom, dr["side"])[2]
-        dw = min(3.5 if dr["id"] == "entrance" else 3.0, dlen * 0.6)
-        c = min(max(dr["offset_ft"], dw / 2 + 0.1), dlen - dw / 2 - 0.1)
+        s0, s1 = door_interval(droom, dr, plan)
+        dw, c = s1 - s0, (s0 + s1) / 2
         abs_openings.append((_room_point(droom, dr["side"], c - dw / 2),
                              _room_point(droom, dr["side"], c + dw / 2)))
 
@@ -246,8 +251,8 @@ def render_2d(plan, output_path, geometry_path=None):
         side = dr["side"]
         t = EXT if _is_ext(room, side) else INT
         dlen = _side_geom(room, side)[2]
-        dw = min(3.5 if dr["id"] == "entrance" else 3.0, dlen * 0.6)
-        c = min(max(dr["offset_ft"], dw / 2 + 0.1), dlen - dw / 2 - 0.1)
+        s0, s1 = door_interval(room, dr, plan)
+        dw, c = s1 - s0, (s0 + s1) / 2
         s0, s1 = c - dw / 2, c + dw / 2
         hx, hy = _pxs(room, side, s0)
         tx, ty = _pxs(room, side, s1)
@@ -262,23 +267,30 @@ def render_2d(plan, output_path, geometry_path=None):
             draw.rectangle((hx - t / 2 - 1, hy, hx + t / 2 + 1, ty), fill=PAPER)
             draw.line((hx - t / 2, hy, hx + t / 2, hy), fill=INK, width=1)
             draw.line((hx - t / 2, ty, hx + t / 2, ty), fill=INK, width=1)
-        if side in ("north", "west"):
-            draw.arc((hx - r, hy - r, hx + r, hy + r), 0, 90, fill=MID, width=2)
-        elif side == "south":
-            draw.arc((hx - r, hy - r, hx + r, hy + r), 270, 360, fill=MID, width=2)
-        else:
-            draw.arc((hx - r, hy - r, hx + r, hy + r), 90, 180, fill=MID, width=2)
+        if dr.get("opening_type") in {"open", "gate"}:
+            draw.line((hx, hy, tx, ty), fill=PAPER, width=int(t + 3))
+            continue
+        opening_midpoint = ((hx + tx) / 2, (hy + ty) / 2)
+        swing = door_swing(room, dr, plan)
+        hx, hy = (ox + swing['hinge_ft'][0] * scale, oy + swing['hinge_ft'][1] * scale)
+        lx, ly = (ox + swing['leaf_ft'][0] * scale, oy + swing['leaf_ft'][1] * scale)
+        draw.arc((hx - r, hy - r, hx + r, hy + r), *swing['arc_degrees'], fill=MID, width=2)
         draw.line((hx, hy, lx, ly), fill=INK, width=4 if dr["id"] == "entrance" else 3)
         draw.ellipse((hx - 2.5, hy - 2.5, hx + 2.5, hy + 2.5), fill=INK)
         qx = -1 if side == "east" else 1
         qy = -1 if side == "south" else 1
+        if dr.get('hinge') == 'end':
+            if side in {'north', 'south'}:
+                qx = -1
+            else:
+                qy = -1
         zone = (hx, hy, r, qx, qy)
         for rid in {dr["room_id"], dr.get("connects_to")}:
             if rid in zones:
                 zones[rid].append(zone)
         if dr["id"] == "entrance":
             gx, gy = outward[side]
-            _halo1(draw, ((hx + tx) / 2 + gx * 15, (hy + ty) / 2 + gy * 15), "ENTRY", f_tag)
+            _halo1(draw, (opening_midpoint[0] + gx * 15, opening_midpoint[1] + gy * 15), "ENTRY", f_tag)
 
 
     # ---------- furniture primitives ----------
@@ -851,15 +863,35 @@ def render_2d(plan, output_path, geometry_path=None):
                 "study": _furn_study, "kitchen": _furn_kitchen, "bathroom": _furn_bath,
                 "puja": _furn_puja, "staircase": _furn_stair, "parking": _furn_parking}
     for room in plan["rooms"]:
+        if "furniture" in plan:
+            continue
         fn = dispatch.get(_role(room))
         if fn:
             fn(room, zones.get(room["id"], []), plan)
+
+    if "furniture" in plan:
+        draw_curated_furniture(draw, plan, ox, oy, scale)
 
     # ---------- room labels ----------
     for room in plan["rooms"]:
         x1, y1 = ox + room["x_ft"] * scale, oy + room["y_ft"] * scale
         x2, y2 = ox + (room["x_ft"] + room["width_ft"]) * scale, oy + (room["y_ft"] + room["depth_ft"]) * scale
         cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+        if room.get("label_position_ft"):
+            cx, cy = ox + room["label_position_ft"][0] * scale, oy + room["label_position_ft"][1] * scale
+        if "furniture" in plan:
+            name = room["name"].upper()
+            font_size = room.get("label_font_size", 23)
+            while font_size > 11 and draw.textbbox((0, 0), name, font=_font(font_size, True))[2] > x2-x1-14:
+                font_size -= 1
+            if room.get("label_lines"):
+                _halo(draw, (cx, cy-7), "\n".join(room["label_lines"]), _font(font_size, True), spacing=2)
+            else:
+                _halo1(draw, (cx, cy - 9), name, _font(font_size, True))
+            dims = f"{_fmt_ft(room['width_ft'])} x {_fmt_ft(room['depth_ft'])}"
+            df = _font(room.get("dimension_font_size", 14 if x2-x1 > 150 else 11))
+            _halo1(draw, (cx, cy+(24 if room.get("label_lines") else 11)), dims, df, fill=MID)
+            continue
         if y2 - y1 < 42 or x2 - x1 < 56:
             _halo1(draw, (cx, cy), room["name"].upper(), f_tag)
             continue
@@ -898,6 +930,9 @@ def render_2d(plan, output_path, geometry_path=None):
     draw.rectangle((330, fy + 4, 372, fy + 18), fill=FURN, outline=FAINT, width=1)
     draw.text((382, fy + 2), "FURNITURE", fill=MID, font=f_tag)
     ty = fy + 34
+    if plan.get("dimension_note"):
+        draw.text((30, ty), plan["dimension_note"], fill=MID, font=f_tag)
+        ty += 18
     strat = plan.get("layout_strategy")
     if strat:
         for line in textwrap.fill("STRATEGY: " + strat.upper(), 118).splitlines():
@@ -907,6 +942,9 @@ def render_2d(plan, output_path, geometry_path=None):
         draw.text((30, ty), line, fill="#6b655c", font=f_small)
         ty += 14
 
+    manifest["doors"] = [dict(d, rendered_interval_ft=list(door_interval(by_id[d["room_id"]], d, plan))) for d in plan["doors"]]
+    if "furniture" in plan:
+        manifest["furniture"] = plan["furniture"]
     image.save(output_path, dpi=(150, 150))
     if geometry_path:
         Path(geometry_path).write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

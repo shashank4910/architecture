@@ -25,7 +25,10 @@ outputs/
 !outputs/.gitkeep
 generated/
 !generated/.gitkeep
-plans/
+plans/*
+!plans/curated/
+/src/plans/
+/work/
 validation/
 experiments/
 tools/

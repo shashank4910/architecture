@@ -32,6 +32,9 @@ def _opening_on_wall(room, opening, width=0):
 
 
 def _room_category(room):
+    # An explicit circulation role must win over labels such as "Bedroom lobby".
+    if room.get("kind") == "circulation":
+        return "common"
     room_id = str(room.get("id", ""))
     if room_id in {"master", "bed2", "bed3", "bed4"} or "bedroom" in room.get("name", "").lower():
         return "private"
@@ -45,23 +48,12 @@ def _room_category(room):
 
 
 def _is_ensuite_connection(door, source_room, target_room):
-    """A private-to-private door is only allowed when the suite relationship is explicit.
-
-    A bedroom may be a true ensuite of another bedroom only when the metadata says so
-    (for example, room['ensuite_of'] == 'master' or vice versa). A generic door flag by
-    itself is not enough, because that would allow accidental bedroom-through-bedroom access.
-    """
+    """Only an explicitly owned bathroom can be an ensuite, never a bedroom."""
     if not source_room or not target_room:
         return False
-    source_id = source_room.get("id")
-    target_id = target_room.get("id")
-    if source_room.get("ensuite_of") == target_id or target_room.get("ensuite_of") == source_id:
-        return True
-    if bool(door.get("ensuite")) and bool(source_room.get("private_suite")):
-        return True
-    if bool(door.get("ensuite")) and bool(target_room.get("private_suite")):
-        return True
-    return False
+    return any(bath.get("kind") == "bathroom" and _room_category(bed) == "private"
+               and bath.get("ensuite_of") == bed.get("id")
+               for bath, bed in ((source_room, target_room), (target_room, source_room)))
 
 
 def _build_access_graph(plan, by_id):
@@ -80,10 +72,10 @@ def _build_access_graph(plan, by_id):
     return graph
 
 
-def _room_has_private_safe_access(graph, target_id, private_room_ids, common_room_ids):
+def _room_has_private_safe_access(graph, target_id, private_room_ids, common_room_ids, service_room_ids=()):
     if target_id in {"exterior"}:
         return True
-    start_nodes = ({"exterior"} | common_room_ids) - {target_id}
+    start_nodes = {"exterior"}
     queue = deque(start_nodes)
     visited = set(start_nodes)
     while queue:
@@ -95,7 +87,7 @@ def _room_has_private_safe_access(graph, target_id, private_room_ids, common_roo
                 continue
             if neighbor in private_room_ids and neighbor != target_id:
                 continue
-            if neighbor in {"bath1", "bath2", "bathroom", "store", "utility", "laundry"} and neighbor != target_id:
+            if neighbor in service_room_ids and neighbor != target_id:
                 continue
             visited.add(neighbor)
             queue.append(neighbor)
@@ -127,10 +119,10 @@ def _validate_access_privacy(plan, by_id, graph):
 
     for room_id, room in by_id.items():
         category = _room_category(room)
-        if room.get("ensuite_of"):
+        if room.get("kind") == "bathroom" and room.get("ensuite_of"):
             continue
         if category == "private" or room_id in {"staircase", "bath1", "bath2", "bathroom", "kitchen", "living", "dining"}:
-            if not _room_has_private_safe_access(graph, room_id, private_room_ids, common_room_ids):
+            if not _room_has_private_safe_access(graph, room_id, private_room_ids, common_room_ids, service_room_ids):
                 if category == "private":
                     errors.append(f"room {room_id}: private room is accessed through another private room or has no common-area access")
                 elif room_id in {"staircase"}:
