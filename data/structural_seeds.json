@@ -443,5 +443,35 @@
         "bed2": [10, 36, 10, 14]
       }
     }
+  },
+  {
+    "seed_id": "E04",
+    "width": 30,
+    "depth": 50,
+    "bedrooms": 3,
+    "store": false,
+    "strategy": "central spine with rear corridor stub; master suite with attached (ensuite) bath plus a common bath serving the other bedrooms",
+    "provenance": "Step E authored ensuite pilot geometry; assembled and validated with existing gates using assembly seed 721",
+    "assembly_seed": 721,
+    "raw": {
+      "status": "AUTHORED_SEED",
+      "entry": "living",
+      "combined_living_dining": true,
+      "ensuite": {"bath2": "master"},
+      "rooms": {
+        "parking": [0, 0, 10, 16],
+        "living": [10, 0, 20, 16],
+        "staircase": [0, 16, 10, 13],
+        "hall": [10, 16, 6, 13],
+        "kitchen": [16, 16, 14, 13],
+        "hall2": [10, 29, 6, 10],
+        "bath1": [0, 29, 10, 10],
+        "bed3": [16, 29, 14, 10],
+        "hall3": [10, 39, 4, 11],
+        "bed2": [0, 39, 10, 11],
+        "master": [14, 39, 10, 11],
+        "bath2": [24, 39, 6, 11]
+      }
+    }
   }
 ]

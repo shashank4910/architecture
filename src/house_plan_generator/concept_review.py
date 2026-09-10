@@ -46,13 +46,16 @@ def review_concept(plan):
                 if min(b,d)>max(a,c):errors.append(f'{i}: overlaps opening {j}')
     # Start only at the actual exterior, never at all common rooms simultaneously.
     for rid,r in by.items():
+        # A genuine ensuite bath is reached only through its owning bedroom; allow
+        # the route to pass through that one bedroom (never any other private/service room).
+        ensuite_owner=r.get('ensuite_of') if r.get('kind')=='bathroom' else None
         queue=deque([('exterior',['exterior'])]); visited=set()
         while queue:
             node,path=queue.popleft()
             if node in visited:continue
             visited.add(node)
             if node==rid:routes[rid]=path;break
-            if node!='exterior' and (_room_category(by[node]) in {'private','service'} or by[node]['kind'] in {'parking','staircase'}):continue
+            if node!='exterior' and node!=ensuite_owner and (_room_category(by[node]) in {'private','service'} or by[node]['kind'] in {'parking','staircase'}):continue
             for nxt in sorted(graph[node]):queue.append((nxt,path+[nxt]))
         if rid not in routes:errors.append(f'{rid}: no entrance-rooted route without traversing private/service rooms')
     clear={}; W,D=plan['plot']['width_ft'],plan['plot']['depth_ft']

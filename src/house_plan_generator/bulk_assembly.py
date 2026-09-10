@@ -69,12 +69,14 @@ def add_windows(p):
 def assemble_layout(raw,width,depth,beds,with_store,seed):
  if 'rooms' not in raw:return None,'solver_'+raw['status'].lower()
  rng=random.Random(seed)
- rooms=[]
+ rooms=[];ensuite_map=raw.get('ensuite',{})
  for rid,(x,y,w,d) in raw['rooms'].items():
   role='bedroom' if rid=='master' or rid.startswith('bed') else 'bathroom' if rid.startswith('bath') else 'circulation' if rid.startswith('hall') else rid
   kind='habitable' if role in ('bedroom','living','dining') else role
-  name=('Master Bedroom' if rid=='master' else f"Bedroom {rid[3:]}" if role=='bedroom' else 'Common Bath' if role=='bathroom' else 'Lobby' if role=='circulation' else 'Terrace Stair' if role=='staircase' else 'Car Porch' if role=='parking' else role.title())
-  rooms.append(dict(id=rid,name=name,kind=kind,role=role,x_ft=x,y_ft=y,width_ft=w,depth_ft=d))
+  name=('Master Bedroom' if rid=='master' else f"Bedroom {rid[3:]}" if role=='bedroom' else ('Attached Bath' if rid in ensuite_map else 'Common Bath') if role=='bathroom' else 'Lobby' if role=='circulation' else 'Terrace Stair' if role=='staircase' else 'Car Porch' if role=='parking' else role.title())
+  room=dict(id=rid,name=name,kind=kind,role=role,x_ft=x,y_ft=y,width_ft=w,depth_ft=d)
+  if rid in ensuite_map:room['ensuite_of']=ensuite_map[rid]
+  rooms.append(room)
  if raw.get('combined_living_dining'):
   for r in rooms:
    if r['id']=='living':r.update(name='Living Dining',combined_living_dining=True)
@@ -102,9 +104,11 @@ def assemble_layout(raw,width,depth,beds,with_store,seed):
   for a,b in trees[attempt%len(trees)]:
    opts=list(door_choices(by[a],by[b],p,kind='open'));add_door(p,opts[(attempt//len(trees))%len(opts)])
   ok=True
-  for r in sorted(rooms,key=lambda r:0 if r['role']=='staircase' else 1):
+  # Staircase first; then ensuite baths before their owning bedrooms so the bedroom furnish avoids the ensuite door approach.
+  for r in sorted(rooms,key=lambda r:0 if r['role']=='staircase' else 1 if (r['role']=='bathroom' and r.get('ensuite_of')) else 2):
    if r['id'] in common or r['role']=='parking':continue
-   targets=[by[i] for i in common if r['role']!='bathroom' or by[i]['role']=='circulation']
+   if r['role']=='bathroom' and r.get('ensuite_of'):targets=[by[r['ensuite_of']]]
+   else:targets=[by[i] for i in common if r['role']!='bathroom' or by[i]['role']=='circulation']
    if r['role']=='store':targets.append(by['kitchen'])
    opts=[d for target in targets for d in door_choices(r,target,p,width=2.75 if r['role'] in ('bathroom','store','kitchen') else 3,kind='open' if r['role'] in ('staircase','kitchen') else 'swing')]
    rng.shuffle(opts);opts.sort(key=lambda d:0 if by[d['connects_to']]['role']=='circulation' else 1)

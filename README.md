@@ -95,6 +95,7 @@ A bounded pilot now exists at `plans/step_e_pilot/`. It contains three newly acc
 - E01: 20x50, 2BHK, with usable store; front social band and central lobby.
 - E02: 30x40, 2BHK, with usable store; east stair/service cluster and separate dining.
 - E03: 20x50, 2BHK, without store; front stair and central living-dining with rear bedroom pair.
+- E04: 30x50, 3BHK, without store; master suite with a genuine attached (ensuite) bath plus a common bath serving the other two bedrooms. The ensuite is reachable only through the master, so no privacy rule is relaxed.
 
 Validate the pilot without running the 300-plan generator:
 

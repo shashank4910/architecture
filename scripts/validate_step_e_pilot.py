@@ -57,9 +57,9 @@ def _load_index():
 
 def main(render=False):
     seeds = json.loads((ROOT / "data" / "structural_seeds.json").read_text())
-    seeds = [seed for seed in seeds if seed.get("seed_id") in {"E01", "E02", "E03"}]
-    if len(seeds) != 3:
-        raise RuntimeError(f"Expected exactly E01-E03, found {len(seeds)} pilot seeds")
+    seeds = [seed for seed in seeds if seed.get("seed_id") in {"E01", "E02", "E03", "E04"}]
+    if len(seeds) != 4:
+        raise RuntimeError(f"Expected exactly E01-E04, found {len(seeds)} pilot seeds")
 
     output_dir = ROOT / "plans" / "step_e_pilot"
     preview_dir = output_dir / "preview"
