@@ -73,7 +73,9 @@ Runtime output is gitignored:
 - The pipeline is fail-closed and reports INCOMPLETE with the exact shortfall until a full, reviewed bank exists.
 - The known accepted bank is 4 of 300: one pre-existing 30x50 4BHK concept plus three newly accepted Step E pilot seeds. This does not establish solver yield or catalogue diversity at 300.
 - The Step E pilot covers 20x50 2BHK with store, 30x40 2BHK with store, and 20x50 2BHK without store; it accepted 3/3 candidates, rejected 0, and rendered 3 previews for assistant-level inspection. All remain conceptual and pending professional review.
-- The catalogue remains INCOMPLETE with a 296-plan shortfall; no 3BHK seed was forced because none passed every existing gate.
+- A later 3BHK ensuite seed (E04, 30x50) was accepted: master suite with a genuine attached bath plus a common bath, privacy-safe. Ensuite support was added to the assembler and reviewer for this.
+- A full generator run (`--max-attempts 60`) accepted only 6 of 300 and reported INCOMPLETE; the CP-SAT solver has near-zero yield (solver_unknown/infeasible dominate rejections), so most quota groups produced nothing. No images were mass-rendered because the render gate refuses an incomplete bank.
+- The catalogue remains INCOMPLETE with a ~294-plan shortfall. The realistic path forward is authoring more validated strategy seeds per high-shortfall group, not re-running the solver.
 - The UI serves only the validated bank.
 - `curated_furniture.py` now draws the orientation metadata (bed heads N/W/S/E, rotated sofas, WC quarter-turns, shelves, short rotated counters, and horizontal/reverse stairs) inside authored footprints, with pure-geometry regression tests.
 

@@ -450,3 +450,12 @@ The continuation completed the bounded Step E pilot without mass-generating the 
 - Final verification: `compileall` passed; the full suite ran 105 tests and passed (`OK`).
 - Known accepted count is now 4/300 including the prior accepted 30x50 4BHK concept. The catalogue remains `INCOMPLETE` with a 296-plan shortfall. No 3BHK seed was accepted in this pilot, and no 300-plan generation was run.
 - Narrow `.gitignore` exceptions track only the pilot canonical JSON and its selected preview assets; temporary debug and validation output must remain untracked.
+
+
+## 15. Ensuite support + full generator run (2026-09-10)
+
+- **Ensuite (attached bathroom) support added.** A seed may declare `raw.ensuite = {"<bathId>": "<bedroomId>"}`. `bulk_assembly.assemble_layout` now routes an ensuite bath's only door into its owning bedroom (processed before the bedroom is furnished so the bedroom furniture avoids the ensuite door approach), stamps `ensuite_of` on the bath and names it "Attached Bath"; non-ensuite baths still connect to circulation only. `concept_review.py`'s entrance-rooted routing BFS now permits reaching an ensuite bath through its one owning bedroom only (all other private/service rooms remain non-traversable); `validator.py` already tolerated `ensuite_of`. Focused tests in `tests/test_ensuite_support.py`.
+- **New accepted seed E04.** 30x50 3BHK, master attached bath + common bath, diversity 0.76, validated and rendered (`plans/step_e_pilot/preview/e04_30x50_3bhk_no_store.png`). Satisfies the "3BHK has at least one master ensuite" request. 2BHK and 4BHK ensuite variants were investigated but not shipped: on those tighter/most-bedroomed plots a master ensuite plus a separate common bath cannot both fit without leaving a secondary bedroom bathless or weakening a gate.
+- **Full generator run** (`--max-attempts 60 --seconds 8 --workers 2`): status INCOMPLETE (exit 2), accepted 6 of 300. Rejections dominated by solver_unknown (44) and solver_infeasible (12); fit_bath/fit_kitchen 10; near_duplicate 3; walk_dining 1. Confirms near-zero solver yield. No mass render (gate refuses incomplete bank).
+- **Verification:** compileall clean; full unittest suite 108/108 OK.
+- **Honest status:** 6 of 300 accepted; ~294 short; INCOMPLETE; nothing approved. Next work: author more validated strategy seeds for the largest-shortfall groups (20x50 2BHK, 30x50 3BHK, 30x40 3BHK). Do not re-run the solver expecting a different yield, and do not fake diversity or disable gates to reach 300.

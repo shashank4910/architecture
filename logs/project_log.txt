@@ -82,3 +82,10 @@
 - Added seed E04: 30x50 3BHK, master attached bath + common bath, diversity score 0.76; validated and rendered. Web-checked Indian standards confirm master-attached bath is conventional and secondary bedrooms commonly use single beds.
 - Investigated 2BHK and 4BHK ensuite variants: the gates accept a master ensuite but only by dropping the separate common bath (the tighter/most-bedroomed plots run out of corridor-adjacent slots for a common bath). Not shipped rather than leave secondary bedrooms bathless or weaken any gate.
 - Verification: compileall passed; full unittest suite 108/108 OK (added tests/test_ensuite_support.py). Pilot now accepts 4/4 (E01-E04); known accepted 5/300; catalogue remains INCOMPLETE with a 295-plan shortfall. No mass generation performed for this change.
+
+[2026-09-10 Full generator run] scripts/generate_300_2d_batch.py --max-attempts 60 --seconds 8 --workers 2.
+- Result: status INCOMPLETE (exit code 2). accepted=6 of 300; attempted=72 (bootstrap_attempts=0, solver_attempts=60 plus the authored/pilot seeds).
+- Accepted by group: 20x50 2BHK no-store 1/51; 20x50 2BHK store 1/9; 30x40 2BHK store 1/5; 30x40 3BHK no-store 1/50; 30x50 4BHK no-store 1/30; 30x50 4BHK store 1/5. All other groups accepted 0. store_utility=3 of 39. distinct_families=6.
+- Rejections: solver_unknown=44, solver_infeasible=12, fit_bath1=7, fit_kitchen=2, near_duplicate=3, walk_dining=1, fit_bath2=1. Confirms near-zero CP-SAT solver yield; most quota groups produced nothing.
+- No images were mass-rendered: the render gate refuses to fully render an incomplete bank, which is correct. Full report at generated/catalog_v2/generation_report.json (git-ignored runtime output).
+- HONEST STATUS: 6 of 300 accepted; catalogue remains INCOMPLETE with a 294-plan shortfall; nothing approved. The 300-image goal is NOT met. Path forward is authoring more validated strategy seeds per high-shortfall group (20x50 2BHK, 30x50 3BHK, 30x40 3BHK), not re-running the solver.
