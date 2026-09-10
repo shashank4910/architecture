@@ -46,3 +46,15 @@
   Exit code 2 = INCOMPLETE (expected until a full reviewed bank exists), not a crash.
 - Honest accepted-vs-300 count: the solver has produced NO proven accepted catalogue yet (0 confirmed accepted from solver search in this sandbox). The pipeline is fail-closed and reports INCOMPLETE with the exact per-group shortfall; it will not render an incomplete bank.
 - Next work: Step D bounded solver pilot (local, .venv) + preview inspection of every PNG, and Step E real diversity library of genuinely different planning strategies. Broaden facings only with real design + tests.
+
+[2026-09-10 17:40:00 +05:30] Local continuation session (Steps A, D verified against real .venv).
+- Environment confirmed: PIL 12.3.0, Flask 3.1.3, numpy 2.5.3, ortools 9.15 all present in .venv.
+- Compile: `.venv\Scripts\python.exe -m compileall -q src scripts app.py` -> exit 0, no errors.
+- Full test suite: `PYTHONPATH=src python -m unittest discover -s tests -v` -> Ran 31 tests, OK, exit 0 (4.2s).
+- Step D bootstrap: `scripts\generate_300_2d_batch.py --max-attempts 0` -> status INCOMPLETE (exit 2). accepted=1/300. The 4 authored 30x50 4BHK seed variants correctly collapse to 1 distinct design (3 rejected as near_duplicate). All 10 other quota groups accepted=0. store_utility=0/39. distinct_families=1.
+- Step D solver pilot: `--max-attempts 12 --seconds 8 --workers 2` -> status INCOMPLETE (exit 2). accepted still 1/300; solver added ZERO new accepted plans. Rejections: solver_unknown=7, solver_infeasible=2, near_duplicate=3, fit_bath1=1, fit_kitchen=1, walk_dining=1. Confirms near-zero solver yield.
+- Step D preview render: `--max-attempts 0 --preview 1` -> rendered=1, production_ready=false, visual_review=pending. Outputs (git-ignored): generated/catalog_v2/review/30x50_4bhk_e3b00f6c1c98.png, contact_01.png, index.html.
+- Assistant visual inspection of BOTH PNGs: §9 orientation fixes render correctly (bed headboards/pillows, long-axis sofa, WC/basin inside baths, kitchen L-counter with hob+sink contained, stair treads+direction arrows+landing, door swings, windows, north arrow, warm-neutral style preserved). Honest design concerns on the single accepted plan: two interior windowless common baths (rely on mechanical-exhaust assumption), a 4ft x 21ft narrow lobby circulation spine, master 11x11 smaller than bedroom3 15x11, bedroom4 uses the disclosed single-bed fallback. This is assistant-level inspection only, NOT user or professional approval.
+- HONEST STATUS: pipeline is fail-closed and correct; 1 of 300 accepted; 300-image goal NOT met; nothing approved. Solver does not currently yield usable diverse designs.
+- Step E (real architectural diversity library) NOT started: it requires substantial new hand-authored plan strategies per plot/BHK group with visual review. Per AGENTS.md ("do not expand designs beyond agreed scope") this needs explicit go-ahead before authoring bulk new designs.
+- No source code changes this session; the Step B/C/§9 code is already on origin/master via merged PR #1 (507e5d6). Only docs/log updated this session.
