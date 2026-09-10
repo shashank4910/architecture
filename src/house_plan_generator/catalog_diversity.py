@@ -2,7 +2,17 @@
 import hashlib
 import json
 from collections import Counter
-import numpy as np
+
+# numpy backs the raster near-duplicate comparison only. Import it lazily so the
+# geometry_key / family_key / role helpers (and modules that import this one)
+# remain usable for pure-Python tests in environments without numpy installed.
+np=None
+
+def _numpy():
+ global np
+ if np is None:
+  import numpy as _np;np=_np
+ return np
 
 ROLES={'bedroom':1,'living':2,'dining':3,'kitchen':4,'bathroom':5,'parking':6,'staircase':7,'circulation':8,'store':9,'puja':10}
 
@@ -16,6 +26,7 @@ def role(r):
  return 'store' if k in ('store','utility') else k
 
 def raster(plan):
+ np=_numpy()
  w,d=plan['plot']['width_ft'],plan['plot']['depth_ft'];grid=np.zeros((round(d*2),round(w*2)),dtype=np.uint8)
  for r in plan['rooms']:
   x,y,x2,y2=[round(v*2) for v in (r['x_ft'],r['y_ft'],r['x_ft']+r['width_ft'],r['y_ft']+r['depth_ft'])]
@@ -55,7 +66,7 @@ class DiversityIndex:
   key=geometry_key(plan);family=family_key(plan);size=(plan['plot']['width_ft'],plan['plot']['depth_ft'])
   if key in self.keys:return 'duplicate_or_mirror',1.0
   if self.families[(size,family)]>=self.family_limit:return 'family_limit',None
-  grid=raster(plan);highest=0
+  np=_numpy();grid=raster(plan);highest=0
   for old in self.grids.get(size,[]):
    score=max(float(np.mean(g==old)) for g in orientations(grid));highest=max(highest,score)
    if score>=self.threshold:return 'near_duplicate',score

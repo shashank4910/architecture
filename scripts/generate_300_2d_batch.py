@@ -17,6 +17,9 @@ def main(argv=None):
     mode.add_argument("--preview",type=int)
     mode.add_argument("--render",action="store_true")
     args=parser.parse_args(argv)
+    # Validate the preview argument BEFORE spending time on the expensive search.
+    if args.preview is not None and args.preview<1:
+        parser.error("--preview must be a positive integer")
     c=generate_catalog(root=args.output,max_attempts=args.max_attempts,seconds=args.seconds,workers=args.workers,progress=lambda p:print(json.dumps(p),flush=True))
     if args.preview is not None or (args.render and c["summary"]["status"]!="INCOMPLETE"):
         print(json.dumps(write_catalog_outputs(args.output,c,preview=args.preview),indent=2))
