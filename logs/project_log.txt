@@ -58,3 +58,12 @@
 - HONEST STATUS: pipeline is fail-closed and correct; 1 of 300 accepted; 300-image goal NOT met; nothing approved. Solver does not currently yield usable diverse designs.
 - Step E (real architectural diversity library) NOT started: it requires substantial new hand-authored plan strategies per plot/BHK group with visual review. Per AGENTS.md ("do not expand designs beyond agreed scope") this needs explicit go-ahead before authoring bulk new designs.
 - No source code changes this session; the Step B/C/§9 code is already on origin/master via merged PR #1 (507e5d6). Only docs/log updated this session.
+
+[2026-09-10 local continuation] Step E investigation — stopped before production changes.
+- Goal: test one genuinely different 20x50 2BHK authored strategy before attempting any larger diversity library.
+- Temporary probe families explored: central/stacked bands and side-circulation-spine arrangements, each sent through the real `assemble_layout()` gate.
+- No candidate was accepted and no seed was added to `data/structural_seeds.json`; no new images were generated.
+- Observed rejection progression included `common_topology`, `fit_master`, `fit_staircase`, and `fit_bed2`. Several proposed band layouts also exceeded the 50ft depth budget or left invalid tile/access conditions.
+- Finding: the current 20x50 2BHK geometry needs a deliberate architectural strategy review, especially parking depth, direct circulation to both bedrooms, stair/furniture minimums, and the tight remaining depth. These probe failures do not prove the quota is impossible, but ad-hoc coordinate nudges are not a responsible path to 300.
+- Decision: stop Step E iteration here and request a detailed expert design/schema plan before authoring more seeds. Preserve fail-closed validation and do not relax diversity or furniture rules.
+- Session status remains: 1 accepted concept of 300, 0 approved; existing pipeline code unchanged. Temporary probe files are being removed before review commit.
